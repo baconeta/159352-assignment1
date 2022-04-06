@@ -17,10 +17,15 @@
 # This web server runs on python v3
 # Usage: execute this program, open your browser (preferably chrome) and type http://servername:8080
 # e.g. if server.py and browser are running on the same machine, then use http://localhost:8080
-
-
+import base64
+from io import StringIO
 from socket import *
 import _thread
+import email
+
+username_password_bytes = "20019455:20019455".encode()
+encoded_auth = base64.b64encode(username_password_bytes).decode()
+header_safe_auth = "Basic " + encoded_auth
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
@@ -33,7 +38,6 @@ print('The server is running')
 
 
 # Server should be up and running and listening to the incoming connections
-
 
 # Extract the given header value from the HTTP request message
 def getHeader(message, header):
@@ -67,10 +71,27 @@ def getFile(filename):
 
 # service function to generate HTTP response with a simple welcome message
 def welcome(message):
-    header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-    body = "<html><head></head><body><h1>Welcome to my homepage</h1></body></html>\r\n".encode()
+    # parse the headers for the message
+    parsed_headers = parse_headers(message)
+
+    # find the auth header
+    auth_token = parsed_headers.get("Authorization")
+    if auth_token is not None:
+        if auth_token == header_safe_auth:
+            print("success!")
+            return getFile("index.html")
+
+    header = "HTTP/1.1 401 Unauthorized\r\nWWW-Authenticate: Basic\r\n".encode()
+    body = "<html><head></head><body><h1>Authenticate please</h1></body></html>".encode()
 
     return header, body
+
+
+def parse_headers(message):
+    _, request_headers = message.split('\r\n', 1)
+    answer = email.message_from_file(StringIO(request_headers))
+    parsed_headers = dict(answer.items())
+    return parsed_headers
 
 
 # default service function
