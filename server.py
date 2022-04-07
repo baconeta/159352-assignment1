@@ -113,6 +113,8 @@ def process(thisConnectionSocket):
         # map requested resource (contained in the URL) to specific function which generates HTTP response
         if resource == "":  # should serve index.html if authenticated
             responseHeader, responseBody = default(message)
+        elif resource == "portfolio" or "research":
+            responseHeader, responseBody = authentication(message, resource + ".html")
         else:  # serve the requested file if authentication passes
             responseHeader, responseBody = authentication(message, resource)
 
