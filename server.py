@@ -52,12 +52,9 @@ def getHeader(message, header):
 # service function to fetch the requested file, and send the contents back to the client in a HTTP response.
 def getFile(filename):
     try:
-
         # open and read the file contents. This becomes the body of the HTTP response
         f = open(filename, "rb")
-
         body = f.read()
-
         header = "HTTP/1.1 200 OK\r\n\r\n".encode()
 
     except IOError:
@@ -70,7 +67,7 @@ def getFile(filename):
 
 
 # service function to generate HTTP response with a simple welcome message
-def welcome(message):
+def authentication(message, resource="index.html"):
     # parse the headers for the message
     parsed_headers = parse_headers(message)
 
@@ -78,7 +75,7 @@ def welcome(message):
     auth_token = parsed_headers.get("Authorization")
     if auth_token is not None:
         if auth_token == header_safe_auth:
-            return getFile("index.html")
+            return getFile(resource)
 
     header = "HTTP/1.1 401 Unauthorized\r\nWWW-Authenticate: Basic\r\n".encode()
     body = "<html><head></head><body><h1>Authenticate please</h1></body></html>".encode()
@@ -95,7 +92,7 @@ def parse_headers(message):
 
 # default service function
 def default(message):
-    header, body = welcome(message)
+    header, body = authentication(message)
 
     return header, body
 
@@ -114,12 +111,10 @@ def process(thisConnectionSocket):
         resource = message.split()[1][1:]
 
         # map requested resource (contained in the URL) to specific function which generates HTTP response
-        if resource == "":
+        if resource == "":  # should serve index.html if authenticated
             responseHeader, responseBody = default(message)
-        elif resource == "welcome":
-            responseHeader, responseBody = welcome(message)
-        else:
-            responseHeader, responseBody = getFile(resource)
+        else:  # serve the requested file if authentication passes
+            responseHeader, responseBody = authentication(message, resource)
 
         # Send the HTTP response header line to the connection socket
         thisConnectionSocket.send(responseHeader)
