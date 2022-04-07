@@ -78,7 +78,6 @@ def welcome(message):
     auth_token = parsed_headers.get("Authorization")
     if auth_token is not None:
         if auth_token == header_safe_auth:
-            print("success!")
             return getFile("index.html")
 
     header = "HTTP/1.1 401 Unauthorized\r\nWWW-Authenticate: Basic\r\n".encode()
