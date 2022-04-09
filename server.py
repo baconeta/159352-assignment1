@@ -1,5 +1,5 @@
-# Based on original file by Sunil Lal
 # Written by Joshua Pearson for 159.352 Assignment 1 (20019455)
+# Based on original server file by Sunil Lal
 
 # This is a simple HTTP server which listens on port 8080, accepts connection request, and processes the client request
 # in separate threads.
@@ -49,12 +49,17 @@ def parse_headers(message):
     http_method = split_message[0]
     resource = split_message[1][1:]
     transfer_method = split_message[2]
+
     _, request_headers = message.split('\r\n', 1)
     answer = email.message_from_file(StringIO(request_headers))
+
     parsed_headers = dict(answer.items())
     parsed_headers["HTTP-Method"] = http_method
     parsed_headers["Resource"] = resource
     parsed_headers["Transfer-Method"] = transfer_method
+    if http_method == "POST":  # To ensure we grab the query payload for handling later
+        parsed_headers["Query"] = message.split("\r\n")[-1]
+
     return parsed_headers
 
 
@@ -85,14 +90,16 @@ def generate_requested_page(parsed_headers):
 
 def serve_site(parsed_headers):
     # temporary response
-    header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-    body = "<html><head></head><body><h1>You passed authentication</h1></body></html>".encode()
+    print(parsed_headers)
     request_type = parsed_headers.get("HTTP-Method")
     if request_type == "GET":
         header, body = generate_requested_page(parsed_headers)
-    elif request_type == "POST":
-        pass
-        # handle_post_request(parsed_headers)
+    # elif request_type == "POST":
+    #     pass
+    # handle_post_request(parsed_headers)
+    else:
+        header = "HTTP/1.1 501 Not Implemented\r\n\r\n".encode()
+        body = "<html><head></head><body><h1>501 request not handled by server.</h1></body></html>".encode()
 
     return header, body
 
@@ -100,8 +107,8 @@ def serve_site(parsed_headers):
 # We process client request here
 def process_connection(this_connection_socket):
     # Receives the request message from the client
-    message = this_connection_socket.recv(1024).decode()
-
+    message = this_connection_socket.recv(2048).decode()
+    print(message)
     if len(message) > 1:
         parsed_headers = parse_headers(message)
         resource = parsed_headers.get("Resource")
