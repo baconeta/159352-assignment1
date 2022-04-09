@@ -23,10 +23,6 @@ from socket import *
 import _thread
 import email
 
-username_password_bytes = "20019455:20019455".encode()
-encoded_auth = base64.b64encode(username_password_bytes).decode()
-header_safe_auth = "Basic " + encoded_auth
-
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
 serverPort = 8080
@@ -67,16 +63,7 @@ def getFile(filename):
 
 
 # service function to generate HTTP response with a simple welcome message
-def authentication(message, resource="index.html"):
-    # parse the headers for the message
-    parsed_headers = parse_headers(message)
-
-    # find the auth header
-    auth_token = parsed_headers.get("Authorization")
-    if auth_token is not None:
-        if auth_token == header_safe_auth:
-            return getFile(resource)
-
+def need_authentication():
     header = "HTTP/1.1 401 Unauthorized\r\nWWW-Authenticate: Basic\r\n".encode()
     body = "<html><head></head><body><h1>Authenticate please</h1></body></html>".encode()
 
@@ -84,39 +71,57 @@ def authentication(message, resource="index.html"):
 
 
 def parse_headers(message):
+    split_message = message.split()
+    http_method = split_message[0]
+    resource = split_message[1][1:]
+    transfer_method = split_message[2]
     _, request_headers = message.split('\r\n', 1)
     answer = email.message_from_file(StringIO(request_headers))
     parsed_headers = dict(answer.items())
+    parsed_headers["HTTP-Method"] = http_method
+    parsed_headers["Resource"] = resource
+    parsed_headers["Transfer-Method"] = transfer_method
     return parsed_headers
 
 
 # default service function
-def default(message):
-    header, body = authentication(message)
+def check_authentication(auth_token):
+    username_password_bytes = "20019455:20019455".encode()
+    encoded_auth = base64.b64encode(username_password_bytes).decode()
+    header_safe_auth = "Basic " + encoded_auth
 
-    return header, body
+    if header_safe_auth == auth_token:
+        return True
+    else:
+        return False
 
 
 # We process client request here. The requested resource in the URL is mapped to a
 # service function which generates the HTTP response that is eventually returned to the client.
+def serve_site(parsed_headers):
+    # temporary response
+    header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+    body = "<html><head></head><body><h1>You passed authentication</h1></body></html>".encode()
+    return header, body
+
+
 def process(this_connection_socket):
     # Receives the request message from the client
     message = this_connection_socket.recv(1024).decode()
 
     if len(message) > 1:
-
-        # Extract the path of the requested object from the message
-        # Because the extracted path of the HTTP request includes
-        # a character '/', we read the path from the second character
-        resource = message.split()[1][1:]
-
-        # map requested resource (contained in the URL) to specific function which generates HTTP response
-        if resource == "":  # should serve index.html if authenticated
-            response_header, response_body = default(message)
-        elif resource == "portfolio" or "research":  # assignment specific resources
-            response_header, response_body = authentication(message, resource + ".html")
-        else:  # serve the requested file if authentication passes
-            response_header, response_body = authentication(message, resource)
+        parsed_headers = parse_headers(message)
+        resource = parsed_headers.get("Resource")
+        auth_token = parsed_headers.get("Authorization")
+        if auth_token is not None:
+            if check_authentication(auth_token):
+                # successful auth, can now continue serving site
+                response_header, response_body = serve_site(parsed_headers);
+            else:
+                # failed auth
+                response_header, response_body = need_authentication()
+        else:
+            response_header, response_body = need_authentication()
 
         # Send the HTTP response header line to the connection socket
         this_connection_socket.send(response_header)
@@ -135,3 +140,16 @@ while True:
     connectionSocket.settimeout(60)
     # start new thread to handle incoming request
     _thread.start_new_thread(process, (connectionSocket,))
+
+# # Extract the path of the requested object from the message
+# # Because the extracted path of the HTTP request includes
+# # a character '/', we read the path from the second character
+# resource = message.split()[1][1:]
+#
+# # map requested resource (contained in the URL) to specific function which generates HTTP response
+# if resource == "":  # should serve index.html if authenticated
+#     response_header, response_body = default(message)
+# elif resource == "portfolio" or "research":  # assignment specific resources
+#     response_header, response_body = authentication(message, resource + ".html")
+# else:  # serve the requested file if authentication passes
+#     response_header, response_body = authentication(message, resource)
