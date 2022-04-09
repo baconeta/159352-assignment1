@@ -137,7 +137,6 @@ def process_connection(this_connection_socket):
     print(message)
     if len(message) > 1:
         parsed_headers = parse_headers(message)
-        resource = parsed_headers.get("Resource")
         response_body, response_header = handle_request(parsed_headers)
 
         # Send the HTTP response header line to the connection socket
@@ -155,7 +154,7 @@ def handle_request(parsed_headers):
     if auth_token is not None:
         if check_authentication(auth_token):
             # successful auth, can now continue serving site
-            response_header, response_body = serve_site(parsed_headers);
+            response_header, response_body = serve_site(parsed_headers)
         else:
             # failed auth
             response_header, response_body = need_authentication()
