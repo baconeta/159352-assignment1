@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- TODO split js into separate file-->
     <meta charset="UTF-8">
     <title>159352 Portfolio</title>
+    <script src="libs/require.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body style="text-align:center;" id="body">
@@ -25,7 +27,7 @@ This needs to be populated from the JSON data held in the file storage using JS?
 </table>
 
 <script>
-    const fs = require('fs')
+    // const fs = require('fs');
     // TODO Here we need to get the JSON data from the file
     let list = [
         {"Stock": "AAPL", "Quantity": "100", "Price": "20", "Gain/Loss": "-20%"},
