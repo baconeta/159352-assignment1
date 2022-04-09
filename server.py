@@ -31,10 +31,23 @@ print('The server is running.')
 
 # Fetch the requested file, and send the contents back to the client in an HTTP response.
 def generate_html_head(filename):
+    if filename == "portfolio":
+        return "<script data-main='scripts/main' src='scripts/require.js'></script> <script " \
+               "src='scripts/main.js'></script> <script " \
+               "src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script> "
     return ""
 
 
 def generate_html_body(filename):
+    if filename == "portfolio":
+        return "<h1>Josh's Investment Portfolio</h1><button onclick='constructTable('#table')'> click here </button> " \
+               "<br><br> <table align='center' id='table' border='1'> </table> <br> <!--action='/action_page.php' " \
+               "TODO add action here--> <!--TODO add alignment--> <form method='post' target='_self'> <label " \
+               "for='stock-symbol'>Stock Symbol:</label> <input id='stock-symbol' name='stock-symbol' required " \
+               "type='text'><br><br> <label for='quantity'>Quantity:</label> <input id='quantity' name='quantity' " \
+               "required step=any type='number'><br><br> <label for='price'>Share price:</label> <input id='price' " \
+               "name='price' required step=0.01 type='number'><br><br> <button type='submit' " \
+               "formmethod='post'>Update</button> </form> "
     return ""
 
 
