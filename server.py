@@ -13,6 +13,13 @@ from socket import *
 import _thread
 import email
 
+template_html_open = "<!DOCTYPE html><html lang='en'>"
+template_head_open = "<head><meta charset='UTF-8'><title>159352 Portfolio</title>"
+template_head_close = "</head>"
+template_body_open = "<body style='text-align:center;' id='body'>"
+template_body_close = "</body>"
+template_html_close = "</html>"
+
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
@@ -23,16 +30,34 @@ print('The server is running.')
 
 
 # Fetch the requested file, and send the contents back to the client in an HTTP response.
-def getFile(filename):
-    try:
-        # open and read the file contents. This becomes the body of the HTTP response
-        f = open(filename, "rb")
-        body = f.read()
-        header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-    except IOError:
-        # Send HTTP response message for resource not found
-        header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
-        body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
+def generate_html_head(filename):
+    return ""
+
+
+def generate_html_body(filename):
+    return ""
+
+
+def make_file(filename):
+    print(filename)
+    if filename == "404":
+        return "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'), \
+               "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode('utf-8')
+
+    header = "HTTP/1.1 200 OK\r\n\r\n".encode('utf-8')
+
+    body = template_html_open + template_head_open
+
+    # add any extra header content here
+    body += generate_html_head(filename)
+
+    body += template_head_close + template_body_open
+
+    # add any extra body content here
+    body += generate_html_body(filename)
+
+    body = body + template_body_close + template_html_close
+    body = body.encode('utf-8')
     return header, body
 
 
@@ -78,14 +103,15 @@ def check_authentication(auth_token):
 # Used to verify and serve the specific required response and page the browser requested
 def generate_requested_page(parsed_headers):
     resource_requested = parsed_headers.get("Resource")
-    if resource_requested == "":
-        return getFile("index.html")
-    elif resource_requested == "portfolio":
-        return getFile("portfolio.html")
-    elif resource_requested == "research":
-        return getFile("research.html")
+    if resource_requested == "" or resource_requested == "index.html":
+        print("resource: " + resource_requested)
+        return make_file("index")
+    elif resource_requested == "portfolio" or resource_requested == "portfolio.html":
+        return make_file("portfolio")
+    elif resource_requested == "research" or resource_requested == "research.html":
+        return make_file("research")
     else:
-        return getFile("404.html")
+        return make_file("404")
 
 
 def serve_site(parsed_headers):
