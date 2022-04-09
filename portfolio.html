@@ -26,6 +26,18 @@ This needs to be populated from the JSON data held in the file storage using JS?
        id="table" border="1">
 </table>
 
+<!--action="/action_page.php" TODO add action here-->
+<!--TODO add alignment-->
+<form method="get" target="_self">
+    <label for="stock-symbol">Stock Symbol:</label>
+    <input id="stock-symbol" name="stock-symbol" required="true" type="text"><br><br>
+    <label for="quantity">Quantity:</label>
+    <input id="quantity" name="quantity" required="true" step=any type="number"><br><br>
+    <label for="price">Price:</label>
+    <input id="price" name="price" required="true" type="text"><br><br>
+    <button type="submit" formmethod="post">Update</button>
+</form>
+
 <script>
     // const fs = require('fs');
     // TODO Here we need to get the JSON data from the file
