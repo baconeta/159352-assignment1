@@ -52,7 +52,6 @@ def generate_html_body(filename):
 
 
 def make_file(filename):
-    print(filename)
     if filename == "404":
         return "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'), \
                "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode('utf-8')
@@ -117,7 +116,6 @@ def check_authentication(auth_token):
 def generate_requested_page(parsed_headers):
     resource_requested = parsed_headers.get("Resource")
     if resource_requested == "" or resource_requested == "index.html":
-        print("resource: " + resource_requested)
         return make_file("index")
     elif resource_requested == "portfolio" or resource_requested == "portfolio.html":
         return make_file("portfolio")
@@ -128,8 +126,6 @@ def generate_requested_page(parsed_headers):
 
 
 def serve_site(parsed_headers):
-    # temporary response
-    print(parsed_headers)
     request_type = parsed_headers.get("HTTP-Method")
     if request_type == "GET":
         header, body = generate_requested_page(parsed_headers)
@@ -147,7 +143,7 @@ def serve_site(parsed_headers):
 def process_connection(this_connection_socket):
     # Receives the request message from the client
     message = this_connection_socket.recv(2048).decode()
-    print(message)
+    # print(message)
     if len(message) > 1:
         parsed_headers = parse_headers(message)
         response_body, response_header = handle_request(parsed_headers)
