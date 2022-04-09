@@ -99,9 +99,9 @@ def default(message):
 
 # We process client request here. The requested resource in the URL is mapped to a
 # service function which generates the HTTP response that is eventually returned to the client.
-def process(thisConnectionSocket):
+def process(this_connection_socket):
     # Receives the request message from the client
-    message = thisConnectionSocket.recv(1024).decode()
+    message = this_connection_socket.recv(1024).decode()
 
     if len(message) > 1:
 
@@ -112,19 +112,19 @@ def process(thisConnectionSocket):
 
         # map requested resource (contained in the URL) to specific function which generates HTTP response
         if resource == "":  # should serve index.html if authenticated
-            responseHeader, responseBody = default(message)
+            response_header, response_body = default(message)
         elif resource == "portfolio" or "research":  # assignment specific resources
-            responseHeader, responseBody = authentication(message, resource + ".html")
+            response_header, response_body = authentication(message, resource + ".html")
         else:  # serve the requested file if authentication passes
-            responseHeader, responseBody = authentication(message, resource)
+            response_header, response_body = authentication(message, resource)
 
         # Send the HTTP response header line to the connection socket
-        thisConnectionSocket.send(responseHeader)
+        this_connection_socket.send(response_header)
         # Send the content of the HTTP body (e.g. requested file) to the connection socket
-        thisConnectionSocket.send(responseBody)
+        this_connection_socket.send(response_body)
 
     # Close the client connection socket
-    thisConnectionSocket.close()
+    this_connection_socket.close()
 
 
 # Main web server loop. It simply accepts TCP connections, and get the request processed in separate threads.
