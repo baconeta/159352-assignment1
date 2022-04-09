@@ -71,10 +71,29 @@ def check_authentication(auth_token):
 
 
 # Used to verify and serve the specific required response and page the browser requested
+def generate_requested_page(parsed_headers):
+    resource_requested = parsed_headers.get("Resource")
+    if resource_requested == "":
+        return getFile("index.html")
+    elif resource_requested == "portfolio":
+        return getFile("portfolio.html")
+    elif resource_requested == "research":
+        return getFile("research.html")
+    else:
+        return getFile("404.html")
+
+
 def serve_site(parsed_headers):
     # temporary response
     header = "HTTP/1.1 200 OK\r\n\r\n".encode()
     body = "<html><head></head><body><h1>You passed authentication</h1></body></html>".encode()
+    request_type = parsed_headers.get("HTTP-Method")
+    if request_type == "GET":
+        header, body = generate_requested_page(parsed_headers)
+    elif request_type == "POST":
+        pass
+        # handle_post_request(parsed_headers)
+
     return header, body
 
 
