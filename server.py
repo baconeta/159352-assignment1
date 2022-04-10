@@ -46,18 +46,20 @@ def generate_html_body(filename):
     # TODO make this populate the table correctly from the JSON file or else create a blank table (do both together?)
     # TODO make the stock symbol populate from API call data
     if filename == "portfolio":
+        portfolio_body = ""
         # first build the table
-        # plonk it into string format
-        # plonk that into the return string (or something like that)
-        return "<h1>Josh's Investment Portfolio</h1><button onclick='constructTable('#table')'> click here </button> " \
-               "<br><br> <table align='center' id='table' border='1'> </table> <br> <form method='post' " \
-               "target='_self'> <label for='stock-symbol' style='width: 100px; display:inline-block'>Stock " \
-               "Symbol:</label> <input id='stock-symbol' name='stock-symbol' required type='text'><br><br> <label " \
-               "for='quantity' style='width: 100px; display:inline-block'>Quantity:</label> <input id='quantity' " \
-               "name='quantity' required step=any type='number' value='0'><br><br> <label for='price' style='width: " \
-               "100px; display:inline-block'>Share price: $</label> <input id='price' name='price' step=0.01 " \
-               "type='number' value='0.00'><br><br> <button type='reset' inline='true'>Reset</button> <button " \
-               "type='submit' formmethod='post' inline='true'>Update</button> </form> "
+        table_data = make_table_from_json_file()
+        portfolio_body += "<h1>Josh's Investment Portfolio</h1>"
+        portfolio_body += table_data
+        portfolio_body += "<br> <form method='post' target='_self'> <label for='stock-symbol' style='width: 100px; " \
+                          "display:inline-block'>Stock Symbol:</label> <input id='stock-symbol' name='stock-symbol' " \
+                          "required type='text'><br><br> <label for='quantity' style='width: 100px; " \
+                          "display:inline-block'>Quantity:</label> <input id='quantity' name='quantity' required " \
+                          "step=any type='number' value='0'><br><br> <label for='price' style='width: 100px; " \
+                          "display:inline-block'>Share price: $</label> <input id='price' name='price' step=0.01 " \
+                          "type='number' value='0.00'><br><br> <button type='reset' inline='true'>Reset</button> " \
+                          "<button type='submit' formmethod='post' inline='true'>Update</button> </form> "
+        return portfolio_body
     # TODO handle research page
     return ""
 
@@ -242,7 +244,7 @@ def add_stock(data):
                 old_quantity = float(stock.get("quantity"))
 
                 if add_quantity > 0:
-                    new_price = ((old_price * old_quantity) + (buy_price * add_quantity)) / new_quantity
+                    new_price = round((((old_price * old_quantity) + (buy_price * add_quantity)) / new_quantity), 2)
                 else:
                     new_price = old_price
                 stock.update({"price": str(new_price), "quantity": str(new_quantity)})
@@ -266,6 +268,31 @@ def handle_portfolio_change(data):
 
     # if the stock is not in the portfolio, then add it to the portfolio
     return add_stock(data)
+
+
+def make_table_from_json_file():
+    portfolio_data = {"Stock_Data": []}
+    table_str = "<table align='center' id='table' border='1'><tr><th style='width:120px'>Stock</th><th " \
+                "style='width:120px'>Quantity</th><th style='width:120px'>Price</th><th " \
+                "style='width:120px'>Gain/Loss</th></tr>"
+    try:
+        with open("portfolio.json", "r") as f:
+            portfolio_data = json.load(f)  # returns a dictionary {"Stock_Data": [LIST OF STOCKS HELD]}
+    except IOError:
+        # file doesn't exist yet, we create it later
+        pass
+
+    for stock in portfolio_data["Stock_Data"]:
+        table_str += "<tr>"
+        table_str += "<td>" + stock.get("stock-symbol") + "</td>"
+        table_str += "<td>" + stock.get("quantity") + "</td>"
+        table_str += f"<td>{stock.get('price')}</td>"
+        table_str += "<td>" "</td>"  # TODO add gain/loss here
+        table_str += "</tr>"
+
+    # add empty row and close tag
+    table_str += "<tr><td><br></td><td> </td><td> </td><td> </td></tr></table>"
+    return table_str
 
 
 # Main web server loop. It simply accepts TCP connections, and get the request processed in separate threads.
