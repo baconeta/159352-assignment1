@@ -251,7 +251,7 @@ def add_stock(data):
         if new_quantity > 0:
             portfolio_data["Stock_Data"].append(new_json_dict)
         else:
-            return "You can't sell shares you don't have!"
+            return "<br>You can't sell shares you don't have!"
 
     with open("portfolio.json", "w") as f:
         json.dump(portfolio_data, f, indent=4)
