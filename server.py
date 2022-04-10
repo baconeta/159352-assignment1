@@ -196,42 +196,66 @@ def add_json_to_file(stock_data):
 
 # Hardcoded handling of adding a new stock into the file
 def add_stock(data):
-    print(data)
     d = data.split("&")
     ticker = d[0].split("=")
     quantity = d[1].split("=")
     price = d[2].split("=")
-    # here we could validate input??? optional
     new_json_dict = {ticker[0]: ticker[1],
                      quantity[0]: quantity[1],
                      price[0]: price[1]}
 
     portfolio_data = {"Stock_Data": []}
 
+    new_quantity = float(quantity[1])
+
     try:
         with open("portfolio.json", "r") as f:
             portfolio_data = json.load(f)  # returns a dictionary {"Stock_Data": [LIST OF STOCKS HELD]}
     except IOError:
-        # file doesn't exist yet
+        # file doesn't exist yet, we create it later
         pass
     except JSONDecodeError:
-        # json file formatted incorrectly
-        pass
+        # json file formatted incorrectly, abort operation TODO add return message
+        return "Error in portfolio.json file. Please see server operator."
 
-    portfolio_data["Stock_Data"].append(new_json_dict)
+    stock_exists = False
+    for stock in portfolio_data["Stock_Data"]:
+        if stock.get("stock-symbol") == ticker[1]:
+            new_quantity += float(stock.get("quantity"))
+            stock_exists = True
+            if new_quantity < 0:
+                return "No short selling allowed."  # not enough stocks to sell, no short selling allowed
+            elif new_quantity == 0:
+                portfolio_data["Stock_Data"].remove(stock)
+                break
+            else:
+                buy_price = float(price[1])
+                add_quantity = float(quantity[1])
+                old_price = float(stock.get("price"))
+                old_quantity = float(stock.get("quantity"))
+
+                if add_quantity > 0:
+                    new_price = ((old_price * old_quantity) + (buy_price * add_quantity)) / new_quantity
+                else:
+                    new_price = old_price
+                stock.update({"price": str(new_price), "quantity": str(new_quantity)})
+
+    if not stock_exists:
+        portfolio_data["Stock_Data"].append(new_json_dict)
 
     with open("portfolio.json", "w") as f:
         json.dump(portfolio_data, f, indent=4)
 
+    if new_quantity == 0:
+        return f"All available shares of {ticker[1]} sold."
+    return "Portfolio updated."
+
 
 def handle_portfolio_change(data):
-    # if the stock is already in the portfolio, then we have to handle updating the stock numbers and buy price
-    # ignore buy price if selling
-    # don't let the user remove more shares than they own
     # output any relevant messages to the html
 
     # if the stock is not in the portfolio, then add it to the portfolio
-    add_stock(data)
+    print(add_stock(data))
 
     pass
 
