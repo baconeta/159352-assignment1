@@ -44,7 +44,11 @@ def generate_html_head(filename):
 
 def generate_html_body(filename):
     # TODO make this populate the table correctly from the JSON file or else create a blank table (do both together?)
+    # TODO make the stock symbol populate from API call data
     if filename == "portfolio":
+        # first build the table
+        # plonk it into string format
+        # plonk that into the return string (or something like that)
         return "<h1>Josh's Investment Portfolio</h1><button onclick='constructTable('#table')'> click here </button> " \
                "<br><br> <table align='center' id='table' border='1'> </table> <br> <form method='post' " \
                "target='_self'> <label for='stock-symbol' style='width: 100px; display:inline-block'>Stock " \
@@ -132,7 +136,7 @@ def generate_requested_page(parsed_headers, post_reply=""):
         return make_file("research")
     else:
         return make_file("404")
-    # TODO possibly add some way to handle extra embedded scripts from inside the html if required
+    # TODO possibly add some way to handle extra embedded scripts from inside the html if required?
 
 
 def serve_site(parsed_headers):
@@ -142,7 +146,7 @@ def serve_site(parsed_headers):
     elif request_type == "POST":
         post_reply = handle_portfolio_change(parsed_headers.get("Query"))  # currently, the only POST available
         header, body = generate_requested_page(parsed_headers, post_reply)
-        # handle_post_request(parsed_headers) TODO to add
+        # handle_post_request(parsed_headers) TODO to add other post request handling?
     else:
         header = "HTTP/1.1 501 Not Implemented\r\n\r\n".encode()
         body = "<html><head></head><body><h1>501 request not handled by server.</h1></body></html>".encode()
@@ -244,7 +248,10 @@ def add_stock(data):
                 stock.update({"price": str(new_price), "quantity": str(new_quantity)})
 
     if not stock_exists:
-        portfolio_data["Stock_Data"].append(new_json_dict)
+        if new_quantity > 0:
+            portfolio_data["Stock_Data"].append(new_json_dict)
+        else:
+            return "You can't sell shares you don't have!"
 
     with open("portfolio.json", "w") as f:
         json.dump(portfolio_data, f, indent=4)
