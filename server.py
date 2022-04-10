@@ -47,11 +47,13 @@ def generate_html_body(filename):
     if filename == "portfolio":
         return "<h1>Josh's Investment Portfolio</h1><button onclick='constructTable('#table')'> click here </button> " \
                "<br><br> <table align='center' id='table' border='1'> </table> <br> <form method='post' " \
-               "target='_self'> <label for='stock-symbol'>Stock Symbol:</label> <input id='stock-symbol' " \
-               "name='stock-symbol' required type='text'><br><br> <label for='quantity'>Quantity:</label> <input " \
-               "id='quantity' name='quantity' required step=any type='number'><br><br> <label for='price'>Share " \
-               "price:</label> <input id='price' name='price' required step=0.01 type='number'><br><br> <button " \
-               "type='submit' formmethod='post'>Update</button> </form> "
+               "target='_self'> <label for='stock-symbol' style='width: 100px; display:inline-block'>Stock " \
+               "Symbol:</label> <input id='stock-symbol' name='stock-symbol' required type='text'><br><br> <label " \
+               "for='quantity' style='width: 100px; display:inline-block'>Quantity:</label> <input id='quantity' " \
+               "name='quantity' required step=any type='number' value='0'><br><br> <label for='price' style='width: " \
+               "100px; display:inline-block'>Share price: $</label> <input id='price' name='price' step=0.01 " \
+               "type='number' value='0.00'><br><br> <button type='reset' inline='true'>Reset</button> <button " \
+               "type='submit' formmethod='post' inline='true'>Update</button> </form> "
     # TODO handle research page
     return ""
 

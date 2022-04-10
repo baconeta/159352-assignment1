@@ -27,16 +27,15 @@ This needs to be populated from the JSON data held in the file storage using JS?
        id="table" border="1">
 </table>
 <br>
-<!--action="/action_page.php" TODO add action here-->
-<!--TODO add alignment-->
-<form method="post" target="_self">
-    <label for="stock-symbol">Stock Symbol:</label>
-    <input id="stock-symbol" name="stock-symbol" required type="text"><br><br>
-    <label for="quantity">Quantity:</label>
-    <input id="quantity" name="quantity" required step=any type="number"><br><br>
-    <label for="price">Share price:</label>
-    <input id="price" name="price" required step=0.01 type="number"><br><br>
-    <button type="submit" formmethod="post">Update</button>
-</form>
+    <form method="post" target="_self">
+        <label for="stock-symbol" style="width: 100px; display:inline-block">Stock Symbol:</label>
+        <input id="stock-symbol" name="stock-symbol" required type="text"><br><br>
+        <label for="quantity" style="width: 100px; display:inline-block">Quantity:</label>
+        <input id="quantity" name="quantity" required step=any type="number" value="0"><br><br>
+        <label for="price" style="width: 100px; display:inline-block">Share price: $</label>
+        <input id="price" name="price" step=0.01 type="number" value="0.00"><br><br>
+        <button type="reset" inline="true">Reset</button>
+        <button type="submit" formmethod="post" inline="true">Update</button>
+    </form>
 </body>
 </html>
