@@ -4,6 +4,16 @@
             "stock-symbol": "GOOG",
             "quantity": "8000",
             "price": "111111"
+        },
+        {
+            "stock-symbol": "GME",
+            "quantity": "100000",
+            "price": "12.33"
+        },
+        {
+            "stock-symbol": "AAPL",
+            "quantity": "200.0",
+            "price": "550.0"
         }
     ]
 }

@@ -56,7 +56,7 @@ def generate_html_body(filename):
     return ""
 
 
-def make_file(filename):
+def make_file(filename, additional_header="", additional_body=""):
     if filename == "404":
         return "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'), \
                "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode('utf-8')
@@ -67,11 +67,13 @@ def make_file(filename):
 
     # add any extra header content here
     body += generate_html_head(filename)
+    body += additional_header
 
     body += template_head_close + template_body_open
 
     # add any extra body content here
     body += generate_html_body(filename)
+    body += additional_body
 
     body = body + template_body_close + template_html_close
     body = body.encode('utf-8')
@@ -118,12 +120,12 @@ def check_authentication(auth_token):
 
 
 # Used to verify and serve the specific required response and page the browser requested
-def generate_requested_page(parsed_headers):
+def generate_requested_page(parsed_headers, post_reply=""):
     resource_requested = parsed_headers.get("Resource")
     if resource_requested == "" or resource_requested == "index.html":
         return make_file("index")
     elif resource_requested == "portfolio" or resource_requested == "portfolio.html":
-        return make_file("portfolio")
+        return make_file("portfolio", "", post_reply)
     elif resource_requested == "research" or resource_requested == "research.html":
         return make_file("research")
     else:
@@ -136,9 +138,8 @@ def serve_site(parsed_headers):
     if request_type == "GET":
         header, body = generate_requested_page(parsed_headers)
     elif request_type == "POST":
-        header, body = generate_requested_page(parsed_headers)  # temporary
-        handle_portfolio_change(parsed_headers.get("Query"))
-        pass
+        post_reply = handle_portfolio_change(parsed_headers.get("Query"))  # currently, the only POST available
+        header, body = generate_requested_page(parsed_headers, post_reply)
         # handle_post_request(parsed_headers) TODO to add
     else:
         header = "HTTP/1.1 501 Not Implemented\r\n\r\n".encode()
@@ -215,8 +216,8 @@ def add_stock(data):
         # file doesn't exist yet, we create it later
         pass
     except JSONDecodeError:
-        # json file formatted incorrectly, abort operation TODO add return message
-        return "Error in portfolio.json file. Please see server operator."
+        # json file formatted incorrectly, abort operation
+        return "<br>Error in portfolio.json file. Please see server operator."
 
     stock_exists = False
     for stock in portfolio_data["Stock_Data"]:
@@ -224,7 +225,7 @@ def add_stock(data):
             new_quantity += float(stock.get("quantity"))
             stock_exists = True
             if new_quantity < 0:
-                return "No short selling allowed."  # not enough stocks to sell, no short selling allowed
+                return "\nNo short selling allowed."  # not enough stocks to sell, no short selling allowed
             elif new_quantity == 0:
                 portfolio_data["Stock_Data"].remove(stock)
                 break
@@ -247,17 +248,15 @@ def add_stock(data):
         json.dump(portfolio_data, f, indent=4)
 
     if new_quantity == 0:
-        return f"All available shares of {ticker[1]} sold."
-    return "Portfolio updated."
+        return f"<br>All available shares of {ticker[1]} sold."
+    return "<br>Portfolio updated."
 
 
 def handle_portfolio_change(data):
     # output any relevant messages to the html
 
     # if the stock is not in the portfolio, then add it to the portfolio
-    print(add_stock(data))
-
-    pass
+    return add_stock(data)
 
 
 # Main web server loop. It simply accepts TCP connections, and get the request processed in separate threads.
