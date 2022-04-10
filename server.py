@@ -9,9 +9,11 @@
 # e.g. if server.py and browser are running on the same machine, then use http://localhost:8080
 import base64
 from io import StringIO
+from json import JSONDecodeError
 from socket import *
 import _thread
 import email
+import json
 
 template_html_open = "<!DOCTYPE html><html lang='en'>"
 template_head_open = "<head><meta charset='UTF-8'><title>159352 Portfolio</title>"
@@ -133,9 +135,11 @@ def serve_site(parsed_headers):
     request_type = parsed_headers.get("HTTP-Method")
     if request_type == "GET":
         header, body = generate_requested_page(parsed_headers)
-    # elif request_type == "POST":
-    #     pass
-    # handle_post_request(parsed_headers)
+    elif request_type == "POST":
+        header, body = generate_requested_page(parsed_headers)  # temporary
+        handle_portfolio_change(parsed_headers.get("Query"))
+        pass
+        # handle_post_request(parsed_headers) TODO to add
     else:
         header = "HTTP/1.1 501 Not Implemented\r\n\r\n".encode()
         body = "<html><head></head><body><h1>501 request not handled by server.</h1></body></html>".encode()
@@ -174,6 +178,62 @@ def handle_request(parsed_headers):
     else:
         response_header, response_body = need_authentication()
     return response_body, response_header
+
+
+# Gets the portfolio file from the filesystem, and creates it if it doesn't exist
+def get_portfolio_file():
+    try:
+        with open("portfolio.json") as f:
+            portfolio_data = f.read()
+            return portfolio_data
+    except FileNotFoundError:
+        return ""
+
+
+def add_json_to_file(stock_data):
+    pass
+
+
+# Hardcoded handling of adding a new stock into the file
+def add_stock(data):
+    print(data)
+    d = data.split("&")
+    ticker = d[0].split("=")
+    quantity = d[1].split("=")
+    price = d[2].split("=")
+    # here we could validate input??? optional
+    new_json_dict = {ticker[0]: ticker[1],
+                     quantity[0]: quantity[1],
+                     price[0]: price[1]}
+
+    portfolio_data = {"Stock_Data": []}
+
+    try:
+        with open("portfolio.json", "r") as f:
+            portfolio_data = json.load(f)  # returns a dictionary {"Stock_Data": [LIST OF STOCKS HELD]}
+    except IOError:
+        # file doesn't exist yet
+        pass
+    except JSONDecodeError:
+        # json file formatted incorrectly
+        pass
+
+    portfolio_data["Stock_Data"].append(new_json_dict)
+
+    with open("portfolio.json", "w") as f:
+        json.dump(portfolio_data, f, indent=4)
+
+
+def handle_portfolio_change(data):
+    # if the stock is already in the portfolio, then we have to handle updating the stock numbers and buy price
+    # ignore buy price if selling
+    # don't let the user remove more shares than they own
+    # output any relevant messages to the html
+
+    # if the stock is not in the portfolio, then add it to the portfolio
+    add_stock(data)
+
+    pass
 
 
 # Main web server loop. It simply accepts TCP connections, and get the request processed in separate threads.

@@ -1,0 +1,14 @@
+{
+    "Stock_Data": [
+        {
+            "stock-symbol": "AAPL",
+            "quantity": "123",
+            "price": "12333"
+        },
+        {
+            "stock-symbol": "GOOG",
+            "quantity": "8000",
+            "price": "111111"
+        }
+    ]
+}
