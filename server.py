@@ -225,7 +225,7 @@ def add_stock(data):
             new_quantity += float(stock.get("quantity"))
             stock_exists = True
             if new_quantity < 0:
-                return "\nNo short selling allowed."  # not enough stocks to sell, no short selling allowed
+                return "<br>No short selling allowed."  # not enough stocks to sell, no short selling allowed
             elif new_quantity == 0:
                 portfolio_data["Stock_Data"].remove(stock)
                 break
