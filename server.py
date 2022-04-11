@@ -63,7 +63,8 @@ def generate_html_head(filename):
         return "<script data-main='scripts/main' src='scripts/require.js'></script> <script " \
                "src='scripts/main.js'></script> <script " \
                "src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script> "
-    # TODO handle research page
+    if filename == "research":
+        return "<script type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.stock.min.js'></script>"
     return ""
 
 
