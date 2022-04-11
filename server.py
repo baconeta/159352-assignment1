@@ -15,6 +15,7 @@ import _thread
 import email
 import json
 import requests
+import sys
 
 template_html_open = "<!DOCTYPE html><html lang='en'>"
 template_head_open = "<head><meta charset='UTF-8'><title>159352 Portfolio</title>"
@@ -30,6 +31,7 @@ api_chart_call = "https://sandbox.iexapis.com/stable/stock/{" \
 list_of_symbols = []
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
+# serverPort = int(sys.argv[1])
 serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
