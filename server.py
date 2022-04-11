@@ -14,6 +14,7 @@ from socket import *
 import _thread
 import email
 import json
+import requests
 
 template_html_open = "<!DOCTYPE html><html lang='en'>"
 template_head_open = "<head><meta charset='UTF-8'><title>159352 Portfolio</title>"
@@ -29,6 +30,17 @@ serverSocket.bind(("", serverPort))
 
 serverSocket.listen(5)
 print('The server is running.')
+api_sandbox_ref_data = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tsk_d4d4b130553e4bed98683e3cab9f360e"
+
+
+def get_symbols_from_api():
+    response = requests.get(api_sandbox_ref_data)
+    list_of_symbols = []
+    if response.status_code == 200:
+        for symbol in response.json():
+            if symbol.get("type") == "cs":
+                list_of_symbols.append(symbol.get("symbol"))
+    return list_of_symbols
 
 
 # Fetch the requested file, and send the contents back to the client in an HTTP response.
@@ -47,13 +59,20 @@ def generate_html_body(filename):
     # TODO make the stock symbol populate from API call data
     if filename == "portfolio":
         portfolio_body = ""
-        # first build the table
+
+        # first prepare the symbols options
+        portfolio_body += "<datalist id='symbols'>"
+        for symbol in get_symbols_from_api():
+            portfolio_body += f"<option value='{symbol}'>"
+        portfolio_body += "</datalist>"
+
+        # now build the table
         table_data = make_table_from_json_file()
         portfolio_body += "<h1>Josh's Investment Portfolio</h1>"
         portfolio_body += table_data
         portfolio_body += "<br> <form method='post' target='_self'> <label for='stock-symbol' style='width: 100px; " \
                           "display:inline-block'>Stock Symbol:</label> <input id='stock-symbol' name='stock-symbol' " \
-                          "required type='text'><br><br> <label for='quantity' style='width: 100px; " \
+                          "list='symbols' required type='text'><br><br> <label for='quantity' style='width: 100px; " \
                           "display:inline-block'>Quantity:</label> <input id='quantity' name='quantity' required " \
                           "step=any type='number' value='0'><br><br> <label for='price' style='width: 100px; " \
                           "display:inline-block'>Share price: $</label> <input id='price' name='price' step=0.01 " \
@@ -279,7 +298,7 @@ def make_table_from_json_file():
         with open("portfolio.json", "r") as f:
             portfolio_data = json.load(f)  # returns a dictionary {"Stock_Data": [LIST OF STOCKS HELD]}
     except IOError:
-        # file doesn't exist yet, we create it later
+        # file doesn't exist yet
         pass
 
     for stock in portfolio_data["Stock_Data"]:
