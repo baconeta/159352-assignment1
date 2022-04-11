@@ -31,8 +31,8 @@ api_chart_call = "https://sandbox.iexapis.com/stable/stock/{" \
 list_of_symbols = []
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
-# serverPort = int(sys.argv[1])
-serverPort = 8080
+serverPort = int(sys.argv[1])
+# serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
