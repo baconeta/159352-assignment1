@@ -22,8 +22,10 @@ template_head_close = "</head>"
 template_body_open = "<body style='text-align:center;' id='body'>"
 template_body_close = "</body>"
 template_html_close = "</html>"
-api_sandbox_symbol = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tsk_d4d4b130553e4bed98683e3cab9f360e"
+api_symbols = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tsk_d4d4b130553e4bed98683e3cab9f360e"
 api_stock_quote = "https://sandbox.iexapis.com/stable/stock/{0}/quote?token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
+api_stats_call = "https://cloud.iexapis.com/stable/stock/{0}/stats?token=pk_95a04004620544349cd846204159cae9"
+api_chart_call = "https://sandbox.iexapis.com/stable/stock/{0}/chart/5y?chartCloseOnly=true&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
 list_of_symbols = []
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
@@ -33,7 +35,7 @@ serverSocket.bind(("", serverPort))
 
 
 def get_symbols_from_api():
-    response = requests.get(api_sandbox_symbol)
+    response = requests.get(api_symbols)
     if response.status_code == 200:
         for symbol in response.json():
             if symbol.get("type") == "cs":
@@ -89,7 +91,22 @@ def generate_html_body(filename):
                           "type='number' value='0.00'><br><br> <button type='reset' inline='true'>Reset</button> " \
                           "<button type='submit' formmethod='post' inline='true'>Update</button> </form> "
         return portfolio_body
-    # TODO handle research page
+    if filename == "research":
+        research_body = ""
+
+        # first prepare the symbols options
+        research_body += "<datalist id='symbols'>"
+        for symbol in list_of_symbols:
+            research_body += f"<option value='{symbol}'>"
+        research_body += "</datalist>"
+
+        research_body += "<h1>Josh's Stock Research Centre</h1><a href='https://iexcloud.io'>Data provided by IEX " \
+                         "Cloud</a><br>"
+        research_body += "<br> <form method='post' target='_self'> <label for='stock-symbol' style='width: 100px; " \
+                         "display:inline-block'>Stock Symbol:</label> <input id='stock-symbol' name='stock-symbol' " \
+                         "required type='text' list='symbols' inline='true'> <button type='submit' formmethod='post' " \
+                         "inline='true'>Research</button> </form> "
+        return research_body
     return ""
 
 
@@ -140,6 +157,7 @@ def parse_headers(message):
     parsed_headers["Transfer-Method"] = transfer_method
     if http_method == "POST":  # To ensure we grab the query payload for handling later
         parsed_headers["Query"] = message.split("\r\n")[-1]
+        print("Query:" + parsed_headers["Query"])
 
     return parsed_headers
 
@@ -164,9 +182,23 @@ def generate_requested_page(parsed_headers, post_reply=""):
     elif resource_requested == "portfolio" or resource_requested == "portfolio.html":
         return make_file("portfolio", "", post_reply)
     elif resource_requested == "research" or resource_requested == "research.html":
-        return make_file("research")
+        return make_file("research", "", post_reply)
     else:
         return make_file("404")
+
+
+def get_stock_stats(stock_to_research):
+    stock_symbol = stock_to_research.split("=")[1]
+    stats = requests.get(api_stats_call.format(stock_symbol.upper())).json()
+    data = "<div style='text-align: left; width: 350px; margin: auto; font-size: 18px'>"
+    data += "<br>Symbol: " + stock_symbol.upper()
+    data += "<br>Company Name: " + stats.get("companyName")
+    data += "<br>PE ratio: " + str(stats.get("peRatio"))
+    data += "<br>Market Capitalization: " + str(stats.get("marketcap"))
+    data += "<br>52 week high: " + str(stats.get("week52high"))
+    data += "<br>52 week low: " + str(stats.get("week52low"))
+    data += "</div>"
+    return data
 
 
 def serve_site(parsed_headers):
@@ -174,9 +206,13 @@ def serve_site(parsed_headers):
     if request_type == "GET":
         header, body = generate_requested_page(parsed_headers)
     elif request_type == "POST":
-        post_reply = handle_portfolio_change(parsed_headers.get("Query"))  # currently, the only POST available
+        post_reply = ""
+        resource_requested = parsed_headers.get("Resource")
+        if resource_requested == "portfolio" or resource_requested == "portfolio.html":
+            post_reply = handle_portfolio_change(parsed_headers.get("Query"))
+        elif resource_requested == "research" or resource_requested == "research.html":
+            post_reply = get_stock_stats(parsed_headers.get("Query"))
         header, body = generate_requested_page(parsed_headers, post_reply)
-        # handle_post_request(parsed_headers) TODO to add other post request handling?
     else:
         header = "HTTP/1.1 501 Not Implemented\r\n\r\n".encode()
         body = "<html><head></head><body><h1>501 request not handled by server.</h1></body></html>".encode()
@@ -187,7 +223,7 @@ def serve_site(parsed_headers):
 # We process client request here
 def process_connection(this_connection_socket):
     # Receives the request message from the client
-    message = this_connection_socket.recv(2048).decode()
+    message = this_connection_socket.recv(4096).decode()
     # print(message)
     if len(message) > 1:
         parsed_headers = parse_headers(message)

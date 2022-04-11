@@ -4,7 +4,23 @@
     <meta charset="UTF-8">
     <title>159352 Research</title>
 </head>
-<body>
+<body style="text-align:center;" id="body">
+<datalist id='symbols'></datalist>
 
+<h1>Josh's Stock Research Centre</h1>
+<br><br>
+<form method="post" target="_self">
+    <label for="stock-symbol" style="width: 100px; display:inline-block">Stock Symbol:</label>
+    <input id="stock-symbol" name="stock-symbol" required type="text" list='symbols' inline="true">
+    <button type="submit" formmethod="post" inline="true">Research</button>
+</form>
+<div style="text-align: left; width: 350px; margin: auto; font-size: 18px">
+        <br>Symbol: TSLA
+        <br>Company Name: Tesla Inc
+        <br>PE ratio: 186.43438868165825
+        <br>Market Capitalization: 1029863563077
+        <br>52 week high: 1243.49
+        <br>52 week low: 546.98
+</div>
 </body>
 </html>
