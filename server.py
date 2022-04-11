@@ -167,7 +167,6 @@ def generate_requested_page(parsed_headers, post_reply=""):
         return make_file("research")
     else:
         return make_file("404")
-    # TODO possibly add some way to handle extra embedded scripts from inside the html if required?
 
 
 def serve_site(parsed_headers):
