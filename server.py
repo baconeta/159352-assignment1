@@ -115,7 +115,7 @@ def make_file(filename, additional_header="", additional_body=""):
     if filename == "404":
         return "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'), \
                "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode('utf-8')
-
+    print(additional_body, file=sys.stderr)
     header = "HTTP/1.1 200 OK\r\n\r\n".encode('utf-8')
 
     body = template_html_open + template_head_open
@@ -144,20 +144,24 @@ def need_authentication():
 
 # Parse the headers and return a dict containing the browsers request
 def parse_headers(message):
-    split_message = message.split()
-    http_method = split_message[0]
-    resource = split_message[1][1:]
-    transfer_method = split_message[2]
+    parsed_headers = {}
+    if len(message.split(" ")) == 1:  # To ensure we grab the query payload for handling later
+        parsed_headers["Query"] = message.split("\r\n")[-1]
+        return parsed_headers
 
     _, request_headers = message.split('\r\n', 1)
     answer = email.message_from_file(StringIO(request_headers))
 
     parsed_headers = dict(answer.items())
+
+    split_message = message.split()
+    http_method = split_message[0]
     parsed_headers["HTTP-Method"] = http_method
+    resource = split_message[1][1:]
     parsed_headers["Resource"] = resource
+    transfer_method = split_message[2]
     parsed_headers["Transfer-Method"] = transfer_method
-    if http_method == "POST":  # To ensure we grab the query payload for handling later
-        parsed_headers["Query"] = message.split("\r\n")[-1]
+
     return parsed_headers
 
 
@@ -226,6 +230,7 @@ def get_stock_stats(stock_to_research):
 
 
 def serve_site(parsed_headers):
+    print(parsed_headers, file=sys.stderr)
     request_type = parsed_headers.get("HTTP-Method")
     if request_type == "GET":
         header, body = generate_requested_page(parsed_headers)
@@ -248,8 +253,13 @@ def serve_site(parsed_headers):
 def process_connection(this_connection_socket):
     # Receives the request message from the client
     message = this_connection_socket.recv(4096).decode()
+    parsed_headers = parse_headers(message)
+    expected_content_len = parsed_headers.get("Content-Length")
+    if expected_content_len is not None:
+        if parsed_headers.get("Query") is None:
+            body_data = this_connection_socket.recv(4096, MSG_PEEK).decode()
+            parsed_headers.update(parse_headers(body_data))
     if len(message) > 1:
-        parsed_headers = parse_headers(message)
         response_body, response_header = handle_request(parsed_headers)
 
         # Send the HTTP response header line to the connection socket
@@ -288,13 +298,19 @@ def get_portfolio_file():
 
 # Hardcoded handling of adding a new stock into the file
 def add_stock(data):
-    d = data.split("&")
-    ticker = d[0].split("=")
-    quantity = d[1].split("=")
-    price = d[2].split("=")
-    new_json_dict = {ticker[0]: ticker[1],
-                     quantity[0]: quantity[1],
-                     price[0]: price[1]}
+    try:
+        print(data, file=sys.stderr)
+        d = data.split("&")
+        print(d, file=sys.stderr)
+        ticker = d[0].split("=")
+        quantity = d[1].split("=")
+        price = d[2].split("=")
+        new_json_dict = {ticker[0]: ticker[1],
+                         quantity[0]: quantity[1],
+                         price[0]: price[1]}
+    except IndexError as e:
+        print(e)
+        return "<br>Error handling request."
 
     if ticker[1].upper() not in list_of_symbols:
         return f"<br>The stock {ticker[1].upper()} doesn't exist."
