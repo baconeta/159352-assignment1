@@ -199,23 +199,27 @@ def build_stock_chart(stock):
 
 
 def get_stock_stats(stock_to_research):
-    stock_symbol = stock_to_research.split("=")[1]
-    stats = requests.get(api_stats_call.format(stock_symbol.upper())).json()
-    data = "<div style='text-align: left; width: 350px; margin: auto; font-size: 18px'>"
-    data += "<br>Symbol: " + stock_symbol.upper()
-    data += "<br>Company Name: " + stats.get("companyName")
-    data += "<br>PE ratio: " + str(stats.get("peRatio"))
-    data += "<br>Market Capitalization: " + str(stats.get("marketcap"))
-    data += "<br>52 week high: " + str(stats.get("week52high"))
-    data += "<br>52 week low: " + str(stats.get("week52low"))
-    data += "</div>"
+    try:
+        stock_symbol = stock_to_research.split("=")[1]
+        stats = requests.get(api_stats_call.format(stock_symbol.upper())).json()
+        data = "<div style='text-align: left; width: 350px; margin: auto; font-size: 18px'>"
+        data += "<br>Symbol: " + stock_symbol.upper()
+        data += "<br>Company Name: " + stats.get("companyName")
+        data += "<br>PE ratio: " + str(stats.get("peRatio"))
+        data += "<br>Market Capitalization: " + str(stats.get("marketcap"))
+        data += "<br>52 week high: " + str(stats.get("week52high"))
+        data += "<br>52 week low: " + str(stats.get("week52low"))
+        data += "</div>"
 
-    # prepare the chart
-    data += build_stock_chart(stock_symbol.upper())
+        # prepare the chart
+        data += build_stock_chart(stock_symbol.upper())
 
-    # now add the chart
-    data += "<div id='stockChart' style='height: 450px; width: 50%; margin-left: auto; margin-right: auto;'></div>"
-    return data
+        # now add the chart
+        data += "<div id='stockChart' style='height: 450px; width: 50%; margin-left: auto; margin-right: auto;'></div>"
+        return data
+    except (JSONDecodeError, IndexError, KeyError) as e:
+        print(e)
+        return "<br>The stock you entered doesn't exist or was entered incorrectly."
 
 
 def serve_site(parsed_headers):
