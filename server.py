@@ -22,34 +22,36 @@ template_head_close = "</head>"
 template_body_open = "<body style='text-align:center;' id='body'>"
 template_body_close = "</body>"
 template_html_close = "</html>"
+api_sandbox_symbol = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tsk_d4d4b130553e4bed98683e3cab9f360e"
+api_stock_quote = "https://sandbox.iexapis.com/stable/stock/{0}/quote?token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
+list_of_symbols = []
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
-serverSocket.listen(5)
-print('The server is running.')
-api_sandbox_symbol_data = "https://sandbox.iexapis.com/stable/ref-data/symbols?token" \
-                          "=Tsk_d4d4b130553e4bed98683e3cab9f360e "
-api_stock_quote_link = "https://cloud.iexapis.com/stable/tops?token=pk_95a04004620544349cd846204159cae9&symbols={0}"
-
 
 def get_symbols_from_api():
-    response = requests.get(api_sandbox_symbol_data)
-    list_of_symbols = []
+    response = requests.get(api_sandbox_symbol)
     if response.status_code == 200:
         for symbol in response.json():
             if symbol.get("type") == "cs":
                 list_of_symbols.append(symbol.get("symbol"))
-    return list_of_symbols
+    else:
+        print("Error getting symbols data from API.")
 
 
 def get_current_price_from_api(stock):
-    api_link = api_stock_quote_link.format(stock.lower())
-    print(api_link)
-    print(requests.get(api_link).json())
-    return ""
+    api_link = api_stock_quote.format(stock.upper())
+    try:
+        stock_data = requests.get(api_link).json()
+        if "latestPrice" not in stock_data:
+            raise ValueError("Latest price data doesn't exist.")
+        return stock_data.get("latestPrice")
+    except (KeyError, ValueError) as e:
+        print(e, f" - does the stock {stock} exist?")
+        return 0.00
 
 
 # Fetch the requested file, and send the contents back to the client in an HTTP response.
@@ -64,20 +66,19 @@ def generate_html_head(filename):
 
 
 def generate_html_body(filename):
-    # TODO make this populate the table correctly from the JSON file or else create a blank table (do both together?)
-    # TODO make the stock symbol populate from API call data
     if filename == "portfolio":
         portfolio_body = ""
 
         # first prepare the symbols options
         portfolio_body += "<datalist id='symbols'>"
-        for symbol in get_symbols_from_api():
+        for symbol in list_of_symbols:
             portfolio_body += f"<option value='{symbol}'>"
         portfolio_body += "</datalist>"
 
         # now build the table
         table_data = make_table_from_json_file()
-        portfolio_body += "<h1>Josh's Investment Portfolio</h1>"
+        portfolio_body += "<h1>Josh's Investment Portfolio</h1><a href='https://iexcloud.io'>Data provided by IEX " \
+                          "Cloud</a><br>"
         portfolio_body += table_data
         portfolio_body += "<br> <form method='post' target='_self'> <label for='stock-symbol' style='width: 100px; " \
                           "display:inline-block'>Stock Symbol:</label> <input id='stock-symbol' name='stock-symbol' " \
@@ -311,17 +312,25 @@ def make_table_from_json_file():
         pass
 
     for stock in portfolio_data["Stock_Data"]:
+        paid_price = float(stock.get("price"))
+        gain = 100 * (get_current_price_from_api(stock.get("stock-symbol")) - paid_price) / paid_price
+        gain = round(gain, 2)
         table_str += "<tr>"
         table_str += "<td>" + stock.get("stock-symbol") + "</td>"
         table_str += "<td>" + stock.get("quantity") + "</td>"
         table_str += f"<td>{stock.get('price')}</td>"
-        table_str += "<td>" + get_current_price_from_api(stock.get("stock-symbol")) + "</td>"  # TODO add gain/loss here
+        table_str += "<td>" + str(gain) + "%</td>"
         table_str += "</tr>"
 
     # add empty row and close tag
     table_str += "<tr><td><br></td><td> </td><td> </td><td> </td></tr></table>"
     return table_str
 
+
+get_symbols_from_api()  # calculated only once for faster page reloading
+
+serverSocket.listen(5)
+print('The server is running.')
 
 # Main web server loop. It simply accepts TCP connections, and get the request processed in separate threads.
 while True:
