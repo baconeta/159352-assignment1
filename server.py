@@ -22,10 +22,11 @@ template_head_close = "</head>"
 template_body_open = "<body style='text-align:center;' id='body'>"
 template_body_close = "</body>"
 template_html_close = "</html>"
-api_symbols = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tsk_d4d4b130553e4bed98683e3cab9f360e"
-api_stock_quote = "https://sandbox.iexapis.com/stable/stock/{0}/quote?token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
+api_symbols = "https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_95a04004620544349cd846204159cae9"
+api_stock_quote = "https://cloud.iexapis.com/stable/stock/{0}/quote?token=pk_95a04004620544349cd846204159cae9"
 api_stats_call = "https://cloud.iexapis.com/stable/stock/{0}/stats?token=pk_95a04004620544349cd846204159cae9"
-api_chart_call = "https://sandbox.iexapis.com/stable/stock/{0}/chart/5y?chartCloseOnly=true&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
+api_chart_call = "https://cloud.iexapis.com/stable/stock/{" \
+                 "0}/chart/5y?chartCloseOnly=true&token=pk_95a04004620544349cd846204159cae9"
 list_of_symbols = []
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
@@ -192,8 +193,8 @@ def build_stock_chart(stock):
     chart += "<script type='text/javascript'> window.onload = function () { let dataPoints = []; let json_data = "
     chart += str(json_chart_data) + "; "
     chart += "let stockChart = new CanvasJS.StockChart('stockChart', { charts: [{ data: [{ type: 'line', dataPoints: " \
-             "dataPoints }] }], navigator: { slider: { minimum: new Date(2022, 0o3, 0o24), maximum: new Date(2022, " \
-             "0o4, 0o24) } } }); for (let i = 0; i < json_data.length; i++) { dataPoints.push({x: new Date(json_data[" \
+             "dataPoints }] }], navigator: { slider: { minimum: new Date(2021,04,07), maximum: new Date(2022," \
+             "04,07) } } }); for (let i = 0; i < json_data.length; i++) { dataPoints.push({x: new Date(json_data[" \
              "i].date), y: Number(json_data[i].close)}); } stockChart.render(); }</script>"
     return chart
 

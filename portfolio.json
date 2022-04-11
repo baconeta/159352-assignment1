@@ -2,8 +2,8 @@
     "Stock_Data": [
         {
             "stock-symbol": "AAPL",
-            "quantity": "100",
-            "price": "162.23"
+            "quantity": "200.0",
+            "price": "163.62"
         },
         {
             "stock-symbol": "GOOG",
