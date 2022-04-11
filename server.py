@@ -285,10 +285,6 @@ def get_portfolio_file():
         return ""
 
 
-def add_json_to_file(stock_data):
-    pass
-
-
 # Hardcoded handling of adding a new stock into the file
 def add_stock(data):
     d = data.split("&")
