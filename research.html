@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>159352 Research</title>
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.stock.min.js"></script>
 </head>
 <body style="text-align:center;" id="body">
 <datalist id='symbols'></datalist>
@@ -15,12 +17,42 @@
     <button type="submit" formmethod="post" inline="true">Research</button>
 </form>
 <div style="text-align: left; width: 350px; margin: auto; font-size: 18px">
-        <br>Symbol: TSLA
-        <br>Company Name: Tesla Inc
-        <br>PE ratio: 186.43438868165825
-        <br>Market Capitalization: 1029863563077
-        <br>52 week high: 1243.49
-        <br>52 week low: 546.98
+    <br>Symbol: TSLA
+    <br>Company Name: Tesla Inc
+    <br>PE ratio: 186.43438868165825
+    <br>Market Capitalization: 1029863563077
+    <br>52 week high: 1243.49
+    <br>52 week low: 546.98
 </div>
+<script type="text/javascript">
+    window.onload = function () {
+        let dataPoints = [];
+
+        let stockChart = new CanvasJS.StockChart("chartContainer", {
+            charts: [{
+                data: [{
+                    type: "line",
+                    dataPoints: dataPoints
+                }]
+            }],
+            navigator: {
+                slider: {
+                    minimum: new Date(2017, 0o4, 0o24),
+                    maximum: new Date(2022, 0o4, 0o24)
+                }
+            }
+        });
+
+        $.getJSON("https://canvasjs.com/data/docs/btcusd2018.json", function (data) {
+            for (let i = 0; i < data.length; i++) {
+                dataPoints.push({x: new Date(data[i].date), y: Number(data[i].close)});
+            }
+
+            stockChart.render();
+        });
+    }
+</script>
+<br>
+<div id="chartContainer" style="height: 450px; width: 100%;"></div>
 </body>
 </html>
