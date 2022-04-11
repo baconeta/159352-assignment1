@@ -188,6 +188,21 @@ def generate_requested_page(parsed_headers, post_reply=""):
         return make_file("404")
 
 
+def build_stock_chart(stock):
+    chart = ""
+    # get stock data
+    json_chart_data = requests.get(api_chart_call.format(stock)).json()
+
+    # add script and use stock data
+    chart += "<script type='text/javascript'> window.onload = function () { let dataPoints = []; let json_data = "
+    chart += str(json_chart_data) + "; "
+    chart += "let stockChart = new CanvasJS.StockChart('stockChart', { charts: [{ data: [{ type: 'line', dataPoints: " \
+             "dataPoints }] }], navigator: { slider: { minimum: new Date(2022, 0o3, 0o24), maximum: new Date(2022, " \
+             "0o4, 0o24) } } }); for (let i = 0; i < json_data.length; i++) { dataPoints.push({x: new Date(json_data[" \
+             "i].date), y: Number(json_data[i].close)}); } stockChart.render(); }</script>"
+    return chart
+
+
 def get_stock_stats(stock_to_research):
     stock_symbol = stock_to_research.split("=")[1]
     stats = requests.get(api_stats_call.format(stock_symbol.upper())).json()
@@ -199,6 +214,12 @@ def get_stock_stats(stock_to_research):
     data += "<br>52 week high: " + str(stats.get("week52high"))
     data += "<br>52 week low: " + str(stats.get("week52low"))
     data += "</div>"
+
+    # prepare the chart
+    data += build_stock_chart(stock_symbol.upper())
+
+    # now add the chart
+    data += "<div id='stockChart' style='height: 450px; width: 50%; margin-left: auto; margin-right: auto;'></div>"
     return data
 
 

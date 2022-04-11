@@ -27,8 +27,15 @@
 <script type="text/javascript">
     window.onload = function () {
         let dataPoints = [];
-
-        let stockChart = new CanvasJS.StockChart("chartContainer", {
+        let json_data = [{
+            'date': '2022-04-11',
+            'close': 35.9639,
+            'volume': 123798406,
+            'change': 0,
+            'changePercent': 0,
+            'changeOverTime': 0
+        }];
+        let stockChart = new CanvasJS.StockChart("stockChart", {
             charts: [{
                 data: [{
                     type: "line",
@@ -43,16 +50,13 @@
             }
         });
 
-        $.getJSON("https://canvasjs.com/data/docs/btcusd2018.json", function (data) {
-            for (let i = 0; i < data.length; i++) {
-                dataPoints.push({x: new Date(data[i].date), y: Number(data[i].close)});
-            }
+        for (let i = 0; i < json_data.length; i++) {
+            dataPoints.push({x: new Date(json_data[i].date), y: Number(json_data[i].close)});
+        }
 
-            stockChart.render();
-        });
+        stockChart.render();
     }
 </script>
 <br>
-<div id="chartContainer" style="height: 450px; width: 100%;"></div>
-</body>
+<div id='stockChart' style='height: 450px; width: 50%; margin-left: auto; margin-right: auto;'></div></body>
 </html>
