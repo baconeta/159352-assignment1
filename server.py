@@ -25,8 +25,8 @@ template_html_close = "</html>"
 api_symbols = "https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_95a04004620544349cd846204159cae9"
 api_stock_quote = "https://cloud.iexapis.com/stable/stock/{0}/quote?token=pk_95a04004620544349cd846204159cae9"
 api_stats_call = "https://cloud.iexapis.com/stable/stock/{0}/stats?token=pk_95a04004620544349cd846204159cae9"
-api_chart_call = "https://cloud.iexapis.com/stable/stock/{" \
-                 "0}/chart/5y?chartCloseOnly=true&token=pk_95a04004620544349cd846204159cae9"
+api_chart_call = "https://sandbox.iexapis.com/stable/stock/{" \
+                 "0}/chart/5y?chartCloseOnly=true&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
 list_of_symbols = []
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
