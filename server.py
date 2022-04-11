@@ -253,9 +253,9 @@ def process_connection(this_connection_socket):
         response_body, response_header = handle_request(parsed_headers)
 
         # Send the HTTP response header line to the connection socket
-        this_connection_socket.send(response_header)
+        this_connection_socket.send(response_header + "\r\n".encode() + response_body)
         # Send the content of the HTTP body (e.g. requested file) to the connection socket
-        this_connection_socket.send(response_body)
+        # this_connection_socket.send(response_body)
 
     # Close the client connection socket
     this_connection_socket.close()
