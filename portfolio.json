@@ -1,24 +1,9 @@
 {
     "Stock_Data": [
         {
-            "stock-symbol": "GOOG",
-            "quantity": "8000",
-            "price": "111111"
-        },
-        {
-            "stock-symbol": "GME",
-            "quantity": "100000",
-            "price": "12.33"
-        },
-        {
             "stock-symbol": "AAPL",
-            "quantity": "190.0",
-            "price": "550.0"
-        },
-        {
-            "stock-symbol": "GOOGL",
-            "quantity": "100",
-            "price": "111"
+            "quantity": "950.0",
+            "price": "1000.0"
         }
     ]
 }

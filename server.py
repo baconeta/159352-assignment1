@@ -30,17 +30,26 @@ serverSocket.bind(("", serverPort))
 
 serverSocket.listen(5)
 print('The server is running.')
-api_sandbox_ref_data = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tsk_d4d4b130553e4bed98683e3cab9f360e"
+api_sandbox_symbol_data = "https://sandbox.iexapis.com/stable/ref-data/symbols?token" \
+                          "=Tsk_d4d4b130553e4bed98683e3cab9f360e "
+api_stock_quote_link = "https://cloud.iexapis.com/stable/tops?token=pk_95a04004620544349cd846204159cae9&symbols={0}"
 
 
 def get_symbols_from_api():
-    response = requests.get(api_sandbox_ref_data)
+    response = requests.get(api_sandbox_symbol_data)
     list_of_symbols = []
     if response.status_code == 200:
         for symbol in response.json():
             if symbol.get("type") == "cs":
                 list_of_symbols.append(symbol.get("symbol"))
     return list_of_symbols
+
+
+def get_current_price_from_api(stock):
+    api_link = api_stock_quote_link.format(stock.lower())
+    print(api_link)
+    print(requests.get(api_link).json())
+    return ""
 
 
 # Fetch the requested file, and send the contents back to the client in an HTTP response.
@@ -306,7 +315,7 @@ def make_table_from_json_file():
         table_str += "<td>" + stock.get("stock-symbol") + "</td>"
         table_str += "<td>" + stock.get("quantity") + "</td>"
         table_str += f"<td>{stock.get('price')}</td>"
-        table_str += "<td>" "</td>"  # TODO add gain/loss here
+        table_str += "<td>" + get_current_price_from_api(stock.get("stock-symbol")) + "</td>"  # TODO add gain/loss here
         table_str += "</tr>"
 
     # add empty row and close tag
