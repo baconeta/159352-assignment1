@@ -58,11 +58,8 @@ def get_current_price_from_api(stock):
 
 # Fetch the requested file, and send the contents back to the client in an HTTP response.
 def generate_html_head(filename):
-    # TODO make sure this only uses the necessary header data
     if filename == "portfolio":
-        return "<script data-main='scripts/main' src='scripts/require.js'></script> <script " \
-               "src='scripts/main.js'></script> <script " \
-               "src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script> "
+        return "<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script> "
     if filename == "research":
         return "<script type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.stock.min.js'></script>"
     return ""
@@ -158,8 +155,6 @@ def parse_headers(message):
     parsed_headers["Transfer-Method"] = transfer_method
     if http_method == "POST":  # To ensure we grab the query payload for handling later
         parsed_headers["Query"] = message.split("\r\n")[-1]
-        print("Query:" + parsed_headers["Query"])
-
     return parsed_headers
 
 
@@ -246,7 +241,6 @@ def serve_site(parsed_headers):
 def process_connection(this_connection_socket):
     # Receives the request message from the client
     message = this_connection_socket.recv(4096).decode()
-    # print(message)
     if len(message) > 1:
         parsed_headers = parse_headers(message)
         response_body, response_header = handle_request(parsed_headers)
@@ -294,6 +288,9 @@ def add_stock(data):
     new_json_dict = {ticker[0]: ticker[1],
                      quantity[0]: quantity[1],
                      price[0]: price[1]}
+
+    if ticker[1].upper() not in list_of_symbols:
+        return f"<br>The stock {ticker[1].upper()} doesn't exist."
 
     portfolio_data = {"Stock_Data": []}
 
