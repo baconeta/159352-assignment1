@@ -17,6 +17,11 @@ import json
 import requests
 import sys
 
+# TODO split html generation outside in a seperate file
+# TODO make javascript take a string argument and set that string on post request, sent JS as part of POST?
+# TODO Tidy all functions up and try make some better handling for file requests etc
+# Add index page data
+
 template_html_open = "<!DOCTYPE html><html lang='en'>"
 template_head_open = "<head><meta charset='UTF-8'><title>159352 Portfolio</title>"
 template_head_close = "</head>"
