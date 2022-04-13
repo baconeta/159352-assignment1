@@ -27,7 +27,7 @@ api_symbols = "https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_95a040
 api_stock_quote = "https://cloud.iexapis.com/stable/stock/{0}/quote?token=pk_95a04004620544349cd846204159cae9"
 api_stats_call = "https://cloud.iexapis.com/stable/stock/{0}/stats?token=pk_95a04004620544349cd846204159cae9"
 api_chart_call = "https://sandbox.iexapis.com/stable/stock/{" \
-                 "0}/chart/5y?chartCloseOnly=true&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
+                 "0}/chart/1y?chartCloseOnly=true&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
 list_of_symbols = []
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
@@ -115,7 +115,6 @@ def make_file(filename, additional_header="", additional_body=""):
     if filename == "404":
         return "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'), \
                "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode('utf-8')
-    print(additional_body, file=sys.stderr)
     header = "HTTP/1.1 200 OK\r\n\r\n".encode('utf-8')
 
     body = template_html_open + template_head_open
@@ -254,11 +253,16 @@ def process_connection(this_connection_socket):
     # Receives the request message from the client
     message = this_connection_socket.recv(4096).decode()
     parsed_headers = parse_headers(message)
-    expected_content_len = parsed_headers.get("Content-Length")
-    if expected_content_len is not None:
-        if parsed_headers.get("Query") is None:
-            body_data = this_connection_socket.recv(4096, MSG_PEEK).decode()
-            parsed_headers.update(parse_headers(body_data))
+    if "Content-Length" in message:
+        expected_content_len = int(parsed_headers.get("Content-Length"))
+        query = ""
+        while len(query) < expected_content_len:
+            data = message.split("\r\n\r\n")
+            if len(data[-1]) == expected_content_len:
+                query = data[-1]
+            else:
+                message = this_connection_socket.recv(expected_content_len).decode()
+        parsed_headers["Query"] = query
     if len(message) > 1:
         response_body, response_header = handle_request(parsed_headers)
 
