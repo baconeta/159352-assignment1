@@ -17,10 +17,13 @@ import json
 import requests
 import sys
 
-# TODO split html generation outside in a seperate file
+# TODO split html generation outside in a separate file and make it work nicer?
 # TODO make javascript take a string argument and set that string on post request, sent JS as part of POST?
 # TODO Tidy all functions up and try make some better handling for file requests etc
-# Add index page data
+# TODO Add index page data
+# TODO Make portfolio API call do it as a batch query
+# TODO delete all unnecessary files once everything is complete
+# TODO write a readme
 
 template_html_open = "<!DOCTYPE html><html lang='en'>"
 template_head_open = "<head><meta charset='UTF-8'><title>159352 Portfolio</title>"
@@ -43,6 +46,7 @@ serverSocket.bind(("", serverPort))
 
 
 def get_symbols_from_api():
+    # TODO make this way prettier - save in json or not?
     response = requests.get(api_symbols)
     if response.status_code == 200:
         for symbol in response.json():
@@ -253,7 +257,7 @@ def serve_site(parsed_headers):
     return header, body
 
 
-# We process client request here
+# We process client requests here
 def process_connection(this_connection_socket):
     # Receives the request message from the client
     message = this_connection_socket.recv(4096).decode()
