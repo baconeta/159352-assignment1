@@ -7,12 +7,17 @@
         },
         {
             "stock-symbol": "GOOG",
-            "quantity": "1000",
-            "price": "2245.33"
+            "quantity": "1013.0",
+            "price": "2245.39"
         },
         {
             "stock-symbol": "AA",
             "quantity": "14",
+            "price": "11"
+        },
+        {
+            "stock-symbol": "ASGN",
+            "quantity": "11",
             "price": "11"
         }
     ]
