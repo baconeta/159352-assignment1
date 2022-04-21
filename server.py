@@ -181,10 +181,7 @@ def check_authentication(auth_token):
     encoded_auth = base64.b64encode(username_password_bytes).decode()
     header_safe_auth = "Basic " + encoded_auth
 
-    if header_safe_auth == auth_token:
-        return True
-    else:
-        return False
+    return header_safe_auth == auth_token
 
 
 # Used to verify and serve the specific required response and page the browser requested
@@ -415,7 +412,7 @@ def make_table_from_json_file():
     return table_str
 
 
-get_symbols_from_api()  # calculated only once for faster page reloading
+get_symbols_from_api()  # calculated only once for faster page reloading at the beginning of server running time
 
 serverSocket.listen(5)
 print('The server is running.')
