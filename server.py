@@ -7,6 +7,7 @@
 # This web server runs on python v3
 # Usage: execute this program, open your browser (preferably chrome) and type http://servername:8080
 # e.g. if server.py and browser are running on the same machine, then use http://localhost:8080
+
 import base64
 from io import StringIO
 from json import JSONDecodeError
@@ -19,11 +20,12 @@ import sys
 
 # TODO split html generation outside in a separate file and make it work nicer?
 # TODO make javascript take a string argument and set that string on post request, sent JS as part of POST?
-# TODO Tidy all functions up and try make some better handling for file requests etc
-# TODO Add index page data
-# TODO Make portfolio API call do it as a batch query
+# TODO Tidy all functions up including better renaming and ordering
+# TODO try make some better generic handling for file requests etc (atm it won't find anything even if it exists)
+# TODO Add index page + data
+# TODO Make portfolio API call do it as a batch query (much quicker? probably not)
 # TODO delete all unnecessary files once everything is complete
-# TODO write a readme
+# TODO write a readme file and info
 
 template_html_open = "<!DOCTYPE html><html lang='en'>"
 template_head_open = "<head><meta charset='UTF-8'><title>159352 Portfolio</title>"
