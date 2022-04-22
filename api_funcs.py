@@ -1,7 +1,7 @@
 from json import JSONDecodeError
 import requests
 
-api_symbols = "https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_95a04004620544349cd846204159cae9"
+api_symbols = "https://cloud.iexapis.com/stable/ref-data/symbols?filter=symbol,type&token=pk_95a04004620544349cd846204159cae9"
 api_stock_quote = "https://cloud.iexapis.com/stable/stock/{0}/quote?token=pk_95a04004620544349cd846204159cae9"
 api_batch_quote = "https://cloud.iexapis.com/stable/stock/market/batch?symbols={0}&types=quote&filter=latestPrice&token=pk_95a04004620544349cd846204159cae9"
 api_stats_call = "https://cloud.iexapis.com/stable/stock/{0}/stats?token=pk_95a04004620544349cd846204159cae9"
@@ -53,3 +53,9 @@ def get_chart_data(stock) -> object:
         return json_data
     except JSONDecodeError:
         return None
+
+
+def get_symbols():
+    if not list_of_symbols:
+        get_symbols_from_api()
+    return list_of_symbols
