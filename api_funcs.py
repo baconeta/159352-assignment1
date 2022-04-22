@@ -6,7 +6,7 @@ api_stock_quote = "https://cloud.iexapis.com/stable/stock/{0}/quote?token=pk_95a
 api_batch_quote = "https://cloud.iexapis.com/stable/stock/market/batch?symbols={0}&types=quote&filter=latestPrice&token=pk_95a04004620544349cd846204159cae9"
 api_stats_call = "https://cloud.iexapis.com/stable/stock/{0}/stats?token=pk_95a04004620544349cd846204159cae9"
 api_chart_call = "https://sandbox.iexapis.com/stable/stock/{" \
-                 "0}/chart/5y?chartCloseOnly=true&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
+                 "0}/chart/5y?chartCloseOnly=true&filter=date,close&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
 list_of_symbols = []
 
 
