@@ -119,9 +119,13 @@ def make_table_from_json_file() -> str:
         # file doesn't exist
         pass
 
+    stocks_to_price = [sym.get("stock-symbol") for sym in portfolio_data["Stock_Data"]]
+    prices = api_funcs.get_batch_current_prices(stocks_to_price)
+    prices = {k: v['quote']['latestPrice'] for (k, v) in prices.items()}
+
     for stock in portfolio_data["Stock_Data"]:
         paid_price = float(stock.get("price"))
-        gain = 100 * (api_funcs.get_current_price_from_api(stock.get("stock-symbol")) - paid_price) / paid_price
+        gain = 100 * (float(prices[stock['stock-symbol']]) - paid_price) / paid_price
         gain = round(gain, 2)  # price should be to 2 decimal places
         table_str += "<tr>"
         table_str += f"<td>{stock.get('stock-symbol')}</td>"
