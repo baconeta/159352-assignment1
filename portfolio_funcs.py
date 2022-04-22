@@ -11,7 +11,7 @@ def handle_portfolio_change(data) -> str:
 
 # Updates the stock portfolio based on the POST data given and returns an appropriate response or error.
 def update_stock_portfolio(data) -> str:
-    # split the query into separate elements
+    # Split the query into its separate elements
     try:
         d = data.split("&")
         ticker = d[0].split("=")
@@ -28,11 +28,18 @@ def update_stock_portfolio(data) -> str:
     if ticker[1].upper() not in api_funcs.list_of_symbols:
         return f"<br>The stock {ticker[1].upper()} doesn't exist."
 
-    portfolio_data = {"Stock_Data": []}
-
     new_quantity = float(quantity[1])
 
-    # Read any existing portfolio data, if we have any
+    # Ensure valid purchase input and price
+    if new_quantity == 0:
+        return "<br>You can't do anything with 0 shares."
+
+    if new_quantity > 0 and float(price[1]) <= 0:
+        return "<br>You can't buy shares for nothing...or less."
+
+    portfolio_data = {"Stock_Data": []}
+
+    # Read and prepare existing portfolio data, if we have any
     try:
         with open("portfolio.json", "r") as f:
             portfolio_data = json.load(f)  # returns a dictionary {"Stock_Data": [LIST OF STOCKS HELD]}
@@ -72,9 +79,11 @@ def update_stock_portfolio(data) -> str:
         else:
             return "<br>You can't sell shares you don't have!"
 
+    # Save the portfolio data back to file
     with open("portfolio.json", "w") as f:
         json.dump(portfolio_data, f, indent=4)
 
     if new_quantity == 0:
         return f"<br>All available shares of {ticker[1]} sold."
+
     return "<br>Portfolio updated."

@@ -21,11 +21,8 @@ import portfolio_funcs
 # TODO make javascript take a string argument and set that string on post request, sent JS as part of POST?
 # TODO try make some better generic handling for file requests etc (atm it won't find anything even if it exists)
 # TODO Add index page + data
-# TODO Make portfolio API call do it as a batch query (much quicker? probably not)
 # TODO delete all unnecessary files once everything is complete
 # TODO write a readme file and info
-# TODO buying 0 shares
-# TODO fix buying shares for negative price
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 # serverPort = int(sys.argv[1])

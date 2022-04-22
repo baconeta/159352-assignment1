@@ -127,8 +127,7 @@ def make_table_from_json_file() -> str:
 
     for stock in portfolio_data["Stock_Data"]:
         paid_price = float(stock.get("price"))
-        gain = 100 * (float(prices[stock['stock-symbol']]) - paid_price) / paid_price
-        gain = round(gain, 2)  # price should be to 2 decimal places
+        gain = round(100 * (float(prices[stock['stock-symbol']]) - paid_price) / paid_price, 2)
         table_str += "<tr>"
         table_str += f"<td>{stock.get('stock-symbol')}</td>"
         table_str += f"<td>{stock.get('quantity')}</td>"
