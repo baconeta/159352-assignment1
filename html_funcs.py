@@ -120,20 +120,20 @@ def make_table_from_json_file() -> str:
         pass
 
     # Handle batch query to grab prices of all stocks in the portfolio
-    stocks_to_price = [sym.get("stock-symbol") for sym in portfolio_data["Stock_Data"]]
+    stocks_to_price = [s.get("stock-symbol") for s in portfolio_data["Stock_Data"]]
     if stocks_to_price:
         prices = api_funcs.get_batch_current_prices(stocks_to_price)
         prices = {k: v['quote']['latestPrice'] for (k, v) in prices.items()}
 
-    for stock in portfolio_data["Stock_Data"]:
-        paid_price = float(stock.get("price"))
-        gain = round(100 * (float(prices[stock['stock-symbol']]) - paid_price) / paid_price, 2)
-        table_str += "<tr>"
-        table_str += f"<td>{stock.get('stock-symbol')}</td>"
-        table_str += f"<td>{stock.get('quantity')}</td>"
-        table_str += f"<td>{stock.get('price')}</td>"
-        table_str += f"<td>{str(gain)}%</td>"
-        table_str += "</tr>"
+        for stock in portfolio_data["Stock_Data"]:
+            paid_price = float(stock.get("price"))
+            gain = round(100 * (float(prices[stock['stock-symbol']]) - paid_price) / paid_price, 2)
+            table_str += "<tr>"
+            table_str += f"<td>{stock.get('stock-symbol')}</td>"
+            table_str += f"<td>{stock.get('quantity')}</td>"
+            table_str += f"<td>{stock.get('price')}</td>"
+            table_str += f"<td>{str(gain)}%</td>"
+            table_str += "</tr>"
 
     # add empty row and close tag
     table_str += "<tr><td><br></td><td> </td><td> </td><td> </td></tr></table>"
