@@ -13,20 +13,22 @@ from io import StringIO
 from socket import *
 import _thread
 import email
+import sys
 
 import api_funcs
 import html_funcs
 import portfolio_funcs
 
 # TODO make javascript take a string argument and set that string on post request, sent JS as part of POST?
+# TODO make html export nicer...
 # TODO try make some better generic handling for file requests etc (atm it won't find anything even if it exists)
 # TODO Add index page + data
 # TODO delete all unnecessary files once everything is complete
 # TODO write a readme file and info
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
-# serverPort = int(sys.argv[1])
-serverPort = 8080
+serverPort = int(sys.argv[1])
+# serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
@@ -34,7 +36,7 @@ serverSocket.bind(("", serverPort))
 # We process client requests here
 def process_connection(this_connection_socket):
     # Receives the request message from the client
-    message = this_connection_socket.recv(4096).decode()
+    message = this_connection_socket.recv(8192).decode()  # Heroku uses an 8kb buffer
     parsed_headers = parse_headers(message)
     if "Content-Length" in message:
         expected_content_len = int(parsed_headers.get("Content-Length"))
