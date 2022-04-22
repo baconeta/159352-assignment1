@@ -68,7 +68,7 @@ def generate_portfolio_body() -> str:
 
     # first prepare the symbols options
     portfolio_body += "<datalist id='symbols'>"
-    for symbol in api_funcs.list_of_symbols:
+    for symbol in api_funcs.get_symbols():
         portfolio_body += f"<option value='{symbol}'>"
     portfolio_body += "</datalist>"
 
@@ -94,7 +94,7 @@ def generate_research_body() -> str:
 
     # first prepare the symbols options
     research_body += "<datalist id='symbols'>"
-    for symbol in api_funcs.list_of_symbols:
+    for symbol in api_funcs.get_symbols():
         research_body += f"<option value='{symbol}'>"
     research_body += "</datalist>"
 
