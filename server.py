@@ -20,7 +20,6 @@ import html_funcs
 import portfolio_funcs
 
 # TODO make javascript take a string argument and set that string on post request, sent JS as part of POST?
-# TODO make html export nicer...
 # TODO try make some better generic handling for file requests etc (atm it won't find anything even if it exists)
 # TODO Add index page + data
 # TODO delete all unnecessary files once everything is complete
