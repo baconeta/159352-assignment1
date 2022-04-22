@@ -1,21 +1,18 @@
 from json import JSONDecodeError
-
 import requests
 
 api_symbols = "https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_95a04004620544349cd846204159cae9"
 api_stock_quote = "https://cloud.iexapis.com/stable/stock/{0}/quote?token=pk_95a04004620544349cd846204159cae9"
 api_stats_call = "https://cloud.iexapis.com/stable/stock/{0}/stats?token=pk_95a04004620544349cd846204159cae9"
 api_chart_call = "https://sandbox.iexapis.com/stable/stock/{" \
-                 "0}/chart/1y?chartCloseOnly=true&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
+                 "0}/chart/5y?chartCloseOnly=true&token=Tpk_e5772b90e3cd48d2aa922e55682b5c5a"
 list_of_symbols = []
 
 
 def get_symbols_from_api():
     response = requests.get(api_symbols)
     if response.status_code == 200:
-        for symbol in response.json():
-            if symbol.get("type") == "cs":
-                list_of_symbols.append(symbol.get("symbol"))
+        list_of_symbols.extend([s['symbol'] for s in response.json() if s['type'] == 'cs'])
     else:
         print("Error getting symbols data from API.")
 

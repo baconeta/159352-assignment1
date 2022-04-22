@@ -24,6 +24,8 @@ import portfolio_funcs
 # TODO Make portfolio API call do it as a batch query (much quicker? probably not)
 # TODO delete all unnecessary files once everything is complete
 # TODO write a readme file and info
+# TODO buying 0 shares
+# TODO fix buying shares for negative price
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 # serverPort = int(sys.argv[1])
