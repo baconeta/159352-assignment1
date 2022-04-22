@@ -119,6 +119,7 @@ def make_table_from_json_file() -> str:
         # file doesn't exist
         pass
 
+    # Handle batch query to grab prices of all stocks in the portfolio
     stocks_to_price = [sym.get("stock-symbol") for sym in portfolio_data["Stock_Data"]]
     prices = api_funcs.get_batch_current_prices(stocks_to_price)
     prices = {k: v['quote']['latestPrice'] for (k, v) in prices.items()}
