@@ -1,12 +1,12 @@
 import json
 import api_funcs
 
-template_html_open = "<!DOCTYPE html><html lang='en'>"
-template_head_open = "<head><meta charset='UTF-8'><title>159352 Portfolio</title>"
-template_head_close = "</head>"
-template_body_open = "<body style='text-align:center;' id='body'>"
-template_body_close = "</body>"
-template_html_close = "</html>"
+template_html_open = "<!DOCTYPE html>\n<html lang='en'>\n"
+template_head_open = "<head>\n<meta charset='UTF-8'>\n<title>159352 Portfolio</title>\n"
+template_head_close = "</head>\n"
+template_body_open = "<body style='text-align:center;' id='body'>\n"
+template_body_close = "</body>\n"
+template_html_close = "</html>\n"
 
 
 # Used to verify and serve the specific required response and page the browser requested
@@ -26,7 +26,7 @@ def get_requested_page(parsed_headers, post_reply="") -> tuple[bytes, bytes]:
 def make_html_file(filename, additional_body="") -> tuple[bytes, bytes]:
     if filename == "404":
         return "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'), \
-               "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode('utf-8')
+               "<html>\n<head>\n</head>\n<body>\n<h1>\n404 Not Found\n</h1>\n</body>\n</html>\r\n".encode('utf-8')
     header = "HTTP/1.1 200 OK\r\n\r\n".encode('utf-8')
 
     body = template_html_open + template_head_open
@@ -48,9 +48,9 @@ def make_html_file(filename, additional_body="") -> tuple[bytes, bytes]:
 # Fetch the requested file, and send the contents back to the client in an HTTP response.
 def generate_html_head(filename) -> str:
     if filename == "portfolio":
-        return "<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script> "
+        return "<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>\n"
     if filename == "research":
-        return "<script type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.stock.min.js'></script>"
+        return "<script type='text/javascript' src='https://canvasjs.com/assets/script/canvasjs.stock.min.js'></script>\n"
     return ""
 
 
@@ -67,24 +67,24 @@ def generate_portfolio_body() -> str:
     portfolio_body = ""
 
     # first prepare the symbols options
-    portfolio_body += "<datalist id='symbols'>"
+    portfolio_body += "<datalist id='symbols'>\n"
     for symbol in api_funcs.get_symbols():
-        portfolio_body += f"<option value='{symbol}'>"
-    portfolio_body += "</datalist>"
+        portfolio_body += f"<option value='{symbol}'>\n"
+    portfolio_body += "</datalist>\n"
 
     # now build the table
     table_data = make_table_from_json_file()
-    portfolio_body += "<h1>Josh's Investment Portfolio</h1><a href='https://iexcloud.io'>Data provided by IEX " \
-                      "Cloud</a><br>"
+    portfolio_body += "<h1>Josh's Investment Portfolio</h1>\n<a href='https://iexcloud.io'>Data provided by IEX " \
+                      "Cloud</a>\n<br>\n"
     portfolio_body += table_data
-    portfolio_body += "<br> <form method='post' target='_self'> <label for='stock-symbol' style='width: 100px; " \
-                      "display:inline-block'>Stock Symbol:</label> <input id='stock-symbol' name='stock-symbol' " \
-                      "list='symbols' required type='text'><br><br> <label for='quantity' style='width: 100px; " \
-                      "display:inline-block'>Quantity:</label> <input id='quantity' name='quantity' required " \
-                      "step=any type='number' value='0'><br><br> <label for='price' style='width: 100px; " \
-                      "display:inline-block'>Share price: $</label> <input id='price' name='price' step=0.01 " \
-                      "type='number' value='0.00'><br><br> <button type='reset' inline='true'>Reset</button> " \
-                      "<button type='submit' formmethod='post' inline='true'>Update</button> </form> "
+    portfolio_body += "<br>\n<form method='post' target='_self'>\n<label for='stock-symbol' style='width: 100px; " \
+                      "display:inline-block'>\nStock Symbol:\n</label>\n<input id='stock-symbol' name='stock-symbol' " \
+                      "list='symbols' required type='text'>\n<br>\n<br>\n<label for='quantity' style='width: 100px; " \
+                      "display:inline-block'>\nQuantity:\n</label>\n<input id='quantity' name='quantity' required " \
+                      "step=any type='number' value='0'>\n<br>\n<br>\n<label for='price' style='width: 100px; " \
+                      "display:inline-block'>\nShare price: $\n</label>\n<input id='price' name='price' step=0.01 " \
+                      "type='number' value='0.00'>\n<br>\n<br>\n<button type='reset' inline='true'>\nReset\n</button>\n" \
+                      "<button type='submit' formmethod='post' inline='true'>\nUpdate\n</button>\n</form>\n"
     return portfolio_body
 
 
@@ -93,25 +93,25 @@ def generate_research_body() -> str:
     research_body = ""
 
     # first prepare the symbols options
-    research_body += "<datalist id='symbols'>"
+    research_body += "<datalist id='symbols'>\n"
     for symbol in api_funcs.get_symbols():
-        research_body += f"<option value='{symbol}'>"
-    research_body += "</datalist>"
+        research_body += f"<option value='{symbol}'>\n"
+    research_body += "</datalist>\n"
 
-    research_body += "<h1>Josh's Stock Research Centre</h1><a href='https://iexcloud.io'>Data provided by IEX " \
-                     "Cloud</a><br>"
-    research_body += "<br> <form method='post' target='_self'> <label for='stock-symbol' style='width: 100px; " \
-                     "display:inline-block'>Stock Symbol:</label> <input id='stock-symbol' name='stock-symbol' " \
-                     "required type='text' list='symbols' inline='true'> <button type='submit' formmethod='post' " \
-                     "inline='true'>Research</button> </form> "
+    research_body += "<h1>Josh's Stock Research Centre</h1>\n<a href='https://iexcloud.io'>Data provided by IEX " \
+                     "Cloud</a>\n<br>\n"
+    research_body += "<br>\n<form method='post' target='_self'>\n<label for='stock-symbol' style='width: 100px; " \
+                     "display:inline-block'>\nStock Symbol:\n</label>\n<input id='stock-symbol' name='stock-symbol' " \
+                     "required type='text' list='symbols' inline='true'>\n<button type='submit' formmethod='post' " \
+                     "inline='true'>\nResearch\n</button>\n</form>\n"
     return research_body
 
 
 def make_table_from_json_file() -> str:
     portfolio_data = {"Stock_Data": []}
-    table_str = "<table align='center' id='table' border='1'><tr><th style='width:120px'>Stock</th><th " \
-                "style='width:120px'>Quantity</th><th style='width:120px'>Price</th><th " \
-                "style='width:120px'>Gain/Loss</th></tr>"
+    table_str = "<table align='center' id='table' border='1'>\n<tr>\n<th style='width:120px'>\nStock\n</th>\n<th " \
+                "style='width:120px'>\nQuantity\n</th>\n<th style='width:120px'>\nPrice\n</th>\n<th " \
+                "style='width:120px'>\nGain/Loss\n</th>\n</tr>"
     try:
         with open("portfolio.json", "r") as f:
             portfolio_data = json.load(f)  # returns a dictionary {"Stock_Data": [LIST OF STOCKS HELD]}
@@ -128,15 +128,15 @@ def make_table_from_json_file() -> str:
         for stock in portfolio_data["Stock_Data"]:
             paid_price = float(stock.get("price"))
             gain = round(100 * (float(prices[stock['stock-symbol']]) - paid_price) / paid_price, 2)
-            table_str += "<tr>"
-            table_str += f"<td>{stock.get('stock-symbol')}</td>"
-            table_str += f"<td>{stock.get('quantity')}</td>"
-            table_str += f"<td>{stock.get('price')}</td>"
-            table_str += f"<td>{str(gain)}%</td>"
-            table_str += "</tr>"
+            table_str += "<tr>\n"
+            table_str += f"<td>{stock.get('stock-symbol')}</td>\n"
+            table_str += f"<td>{stock.get('quantity')}</td>\n"
+            table_str += f"<td>{stock.get('price')}</td>\n"
+            table_str += f"<td>{str(gain)}%</td>\n"
+            table_str += "</tr>\n"
 
     # add empty row and close tag
-    table_str += "<tr><td><br></td><td> </td><td> </td><td> </td></tr></table>"
+    table_str += "<tr><td><br></td><td> </td><td> </td><td> </td></tr></table>\n"
     return table_str
 
 
@@ -145,41 +145,41 @@ def get_stock_stats(stock_to_research) -> str:
         stock_symbol = stock_to_research.split("=")[1]
         stats = api_funcs.get_stock_data(stock_symbol)
 
-        data = "<div style='text-align: left; width: 350px; margin: auto; font-size: 18px'>"
+        data = "<div style='text-align: left; width: 350px; margin: auto; font-size: 18px'>\n"
         if stats is None:
-            data += "Error grabbing stock stat data. Data below may be incomplete.<br>"
+            data += "Error grabbing stock stat data. Data below may be incomplete.\n<br>\n"
 
         # stats.get() calls will be empty objects if stats is None which is good behaviour here
-        data += "<br>Symbol: " + stock_symbol.upper()
-        data += "<br>Company Name: " + stats.get("companyName")
-        data += "<br>PE ratio: " + str(stats.get("peRatio"))
-        data += "<br>Market Capitalization: " + str(stats.get("marketcap"))
-        data += "<br>52 week high: " + str(stats.get("week52high"))
-        data += "<br>52 week low: " + str(stats.get("week52low"))
-        data += "</div>"
+        data += "\n<br>\nSymbol: " + stock_symbol.upper()
+        data += "\n<br>\nCompany Name: " + stats.get("companyName")
+        data += "\n<br>\nPE ratio: " + str(stats.get("peRatio"))
+        data += "\nbr>\nMarket Capitalization: " + str(stats.get("marketcap"))
+        data += "\n<br>\n52 week high: " + str(stats.get("week52high"))
+        data += "\n<br>\n52 week low: " + str(stats.get("week52low"))
+        data += "\n</div>\n"
 
         # prepare the chart
         data += build_stock_chart(stock_symbol.upper())
 
         # now add the chart
-        data += "<div id='stockChart' style='height: 450px; width: 50%; margin-left: auto; margin-right: auto;'></div>"
+        data += "<div id='stockChart' style='height: 450px; width: 50%; margin-left: auto; margin-right: auto;'>\n</div>\n"
         return data
     except (IndexError, KeyError) as e:
         print(e)
-        return "<br>The stock you entered doesn't exist or was entered incorrectly."
+        return "\n<br>\nThe stock you entered doesn't exist or was entered incorrectly.\n"
 
 
 def build_stock_chart(stock) -> str:
     # get stock data
     chart_data = api_funcs.get_chart_data(stock)
     if chart_data is None:
-        return f"<br>Error grabbing data about {stock}. Try again or another stock.<br>"
+        return f"\n<br>\nError grabbing data about {stock}. Try again or another stock.\n<br>\n"
 
     # add script and embed stock data
-    chart = "<script type='text/javascript'> window.onload = function () { let dataPoints = []; let json_data = "
+    chart = "\n<script type='text/javascript'>\nwindow.onload = function () { let dataPoints = []; let json_data = "
     chart += str(chart_data) + "; "
     chart += "let stockChart = new CanvasJS.StockChart('stockChart', { charts: [{ data: [{ type: 'line', dataPoints: " \
              "dataPoints }] }], navigator: { slider: { minimum: new Date(2021,04,07), maximum: new Date(2022," \
              "04,07) } } }); for (let i = 0; i < json_data.length; i++) { dataPoints.push({x: new Date(json_data[" \
-             "i].date), y: Number(json_data[i].close)}); } stockChart.render(); }</script>"
+             "i].date), y: Number(json_data[i].close)}); } stockChart.render(); }\n</script>\n"
     return chart
