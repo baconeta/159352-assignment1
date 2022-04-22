@@ -25,7 +25,7 @@ def update_stock_portfolio(data) -> str:
         return "<br>Error handling request."
 
     # Check if the stock exists in our API data
-    if ticker[1].upper() not in api_funcs.list_of_symbols:
+    if ticker[1].upper() not in api_funcs.get_symbols():
         return f"<br>The stock {ticker[1].upper()} doesn't exist."
 
     new_quantity = float(quantity[1])
