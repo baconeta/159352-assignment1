@@ -36,7 +36,7 @@ def process_connection(this_connection_socket):
     if "Content-Length" in message:
         expected_content_len = int(parsed_headers.get("Content-Length"))
         query = ""
-        while len(query) < expected_content_len:
+        while len(query) < expected_content_len:  # Ensure we have received the entire query payload
             data = message.split("\r\n\r\n")
             if len(data[-1]) == expected_content_len:
                 query = data[-1]
@@ -65,6 +65,7 @@ def parse_headers(message) -> dict:
 
     parsed_headers = dict(answer.items())
 
+    # Manually set the single data message inputs into the same dictionary
     split_message = message.split()
     http_method = split_message[0]
     parsed_headers["HTTP-Method"] = http_method
@@ -78,7 +79,7 @@ def parse_headers(message) -> dict:
 
 # Verifies authentication and responds with the appropriate response based on the browser request
 def handle_request(parsed_headers) -> tuple[bytes, bytes]:
-    auth_token = parsed_headers.get("Authorization")
+    auth_token = parsed_headers["Authorization"]
     if auth_token is not None:
         if check_authentication(auth_token):
             # successful auth, can now continue serving site
@@ -109,16 +110,16 @@ def check_authentication(auth_token) -> bool:
 
 # Handles the generating and serving of all related site data once request is authenticated and validated
 def serve_site(parsed_headers) -> tuple[bytes, bytes]:
-    request_type = parsed_headers.get("HTTP-Method")
+    request_type = parsed_headers["HTTP-Method"]
     resource_requested = parsed_headers["Resource"]
     if request_type == "GET":
         header, body = html_funcs.get_requested_page(resource_requested)
     elif request_type == "POST":
         post_reply = ""
         if resource_requested == "portfolio" or resource_requested == "portfolio.html":
-            post_reply = portfolio_funcs.handle_portfolio_change(parsed_headers.get("Query"))
+            post_reply = portfolio_funcs.handle_portfolio_change(parsed_headers["Query"])
         elif resource_requested == "research" or resource_requested == "research.html":
-            post_reply = html_funcs.get_stock_stats(parsed_headers.get("Query"))
+            post_reply = html_funcs.get_stock_stats(parsed_headers["Query"])
         header, body = html_funcs.get_requested_page(resource_requested, post_reply)
     else:  # this server only handles POST and GET requests
         header = "HTTP/1.1 501 Not Implemented\r\n\r\n".encode()
