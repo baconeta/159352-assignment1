@@ -19,13 +19,12 @@ import api_funcs
 import html_funcs
 import portfolio_funcs
 
-# TODO Add index data
 # TODO delete all unnecessary files once everything is complete
 # TODO write a readme file and info
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
-serverPort = int(sys.argv[1])
-# serverPort = 8080
+# serverPort = int(sys.argv[1])
+serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 

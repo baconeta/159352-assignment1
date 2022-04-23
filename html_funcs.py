@@ -4,8 +4,9 @@ import api_funcs
 template_html_open = "<!DOCTYPE html>\n<html lang='en'>\n"
 template_head_open = "<head>\n<meta charset='UTF-8'>\n<title>159352 Portfolio</title>\n"
 template_head_close = "<link rel='stylesheet' href='main.css''>\n</head>\n"
-template_body_open = "<body>\n<div class='navbar'>\n<a class='active' href='/index.html'>Home</a>\n" \
-                     "<a href='/portfolio'>Portfolio</a>\n<a href='/research'>Research</a>\n</div>\n"
+template_body_open = "<body>\n<div class='navbar'>\n{0}</div>\n"
+template_navs = ["<a {0} href='/index.html'>Home</a>\n", "<a {0} href='/portfolio'>Portfolio</a>\n",
+                 "<a {0} href='/research'>Research</a>\n"]
 template_body_close = "</body>\n"
 template_html_close = "</html>\n"
 
@@ -27,21 +28,21 @@ def get_requested_page(resource_requested, post_reply="") -> tuple[bytes, bytes]
         header = "HTTP/1.1 200 OK\r\n\r\n".encode()
         return header, body
     except IOError:
-        return make_html_file("404")  # TODO change to missing file error?
+        return make_html_file("404", "<h1>\n404 Not Found\n</h1>\n")
 
 
 def make_html_file(filename, additional_body="") -> tuple[bytes, bytes]:
     if filename == "404":
-        return "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8'), \
-               "<html>\n<head>\n</head>\n<body>\n<h1>\n404 Not Found\n</h1>\n</body>\n</html>\r\n".encode('utf-8')
-    header = "HTTP/1.1 200 OK\r\n\r\n".encode('utf-8')
+        header = "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8')
+    else:
+        header = "HTTP/1.1 200 OK\r\n\r\n".encode('utf-8')
 
     body = template_html_open + template_head_open
 
     # page relevant header content is added here
     body += generate_html_head(filename)
 
-    body += template_head_close + template_body_open
+    body += template_head_close + template_body_open.format(build_nav_bar(filename))
 
     # page relevant body content is added here
     body += generate_html_body(filename)
@@ -66,7 +67,15 @@ def generate_html_body(filename) -> str:
         return generate_portfolio_body()
     if filename == "research":
         return generate_research_body()
+    if filename == "index":
+        return "<h3>Login successful.</h3>\n<h2>Welcome to your stock portfolio and research centre, Josh</h2>\n<p>" \
+               "Use the links on the bar above to view and update your portfolio, or access your research centre.</p>\n"
     return ""
+
+
+# Ensures the current page has the active class tag and all other nav tags have nothing
+def build_nav_bar(page) -> str:
+    return "".join([s.format("class='active'") if page in s else s.format("") for s in template_navs])
 
 
 # Generate the portfolio html body
