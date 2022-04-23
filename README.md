@@ -70,6 +70,10 @@ Command line:
 Docker running locally:
 ![image](https://user-images.githubusercontent.com/36744690/164895752-7a0c0155-140c-489b-93d3-7717cd57d0cb.png)
 
+Accessible and working completely on localhost:8080
+![image](https://user-images.githubusercontent.com/36744690/164896193-5dded4cb-84e9-4358-bce9-94aabb2ef3a1.png)
+
+
 ## Run Locally
 
 - _Clone the project from Github_
