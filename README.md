@@ -60,6 +60,16 @@ The dockerfile data is visible inside the repo but the relevant data is here:
   CMD python server.py $PORT
 ```
 
+The Dockerfile to run on Docker locally was changed to be:
+```docker
+  FROM python:3.10.0a2-slim-buster
+  RUN pip3 install requests
+  COPY . /src
+  WORKDIR /src
+  EXPOSE 8080
+  CMD python server.py 8080
+```
+
 We use $PORT to allow Heroku on deployment to select the port used for hosting services.
 
 Some images of the process are below.
@@ -94,7 +104,7 @@ Install dependencies
   pip3 install requests
 ```
 
-Start the server (you should confirm that line 25 is commented out and line 26 is uncommented - see below for more info)
+Start the server (you should confirm that line 25 is commented out and line 26 is uncommented unless running in a Docker container - see below for more info)
 
 ```bash
   python3 server.py
@@ -102,14 +112,30 @@ Start the server (you should confirm that line 25 is commented out and line 26 i
 
 - _Run locally without cloning from git repo_
 
-In your local environment ensure you have the requests library installed (consider using pip3 install requests)
+In your local environment or IDE ensure you have the requests library installed (consider using pip3 install requests)
 
-Start the server. Make sure the following code is set correctly otherwise ensure you pass the port argument into the run command.
-You can also skip this cmd line command and instead run it in an anaconda or venv environment inside your IDE and run the server file.
+Otherwise similarly to above using the command line:
+
+Go to the project directory
+
+```bash
+  cd assignment1
+```
+
+Install dependencies
+
+```bash
+  pip3 install requests
+```
+
+Start the server. 
+You can also skip this cmd line command and instead run it in an anaconda or venv environment inside your IDE and run the server file manually.
 
 ```bash
   python3 server.py
 ```
+
+Make sure the following code is set correctly otherwise ensure you pass the port argument into the run command. Docker and Heroku require the sys argument instead to be uncommented as it is in the repo version of server.py.
 ![image](https://user-images.githubusercontent.com/36744690/164895225-59cfae01-a2a4-45d3-9f01-77e8d47978d8.png)
 
 
@@ -143,8 +169,6 @@ Heroku
 - Webstorm 2022.1 (Professional Edition)
 - [IEX REST API](https://iexcloud.io/) (free version)
 - [CanvasJS](https://canvasjs.com/) (30 day free trial)
-
-
 
 
 
