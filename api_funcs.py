@@ -24,7 +24,7 @@ def get_current_price_from_api(stock) -> float:
         stock_data = requests.get(api_url).json()
         if "latestPrice" not in stock_data:
             raise ValueError("Latest price data doesn't exist.")
-        return stock_data.get("latestPrice")
+        return stock_data["latestPrice"]
     except (KeyError, ValueError) as e:
         print(e, f" - does the stock {stock} exist?")
         return 0.00

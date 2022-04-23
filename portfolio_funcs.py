@@ -55,8 +55,8 @@ def update_stock_portfolio(data) -> str:
     # Handle the portfolio change request
     stock_exists = False
     for stock in portfolio_data["Stock_Data"]:
-        if stock.get("stock-symbol") == ticker[1]:
-            new_quantity += float(stock.get("quantity"))
+        if stock["stock-symbol"] == ticker[1]:
+            new_quantity += float(stock["quantity"])
             stock_exists = True
             if new_quantity < 0:
                 return "<br>No short selling allowed."
@@ -66,8 +66,8 @@ def update_stock_portfolio(data) -> str:
             else:
                 buy_price = float(price[1])
                 add_quantity = float(quantity[1])
-                old_price = float(stock.get("price"))
-                old_quantity = float(stock.get("quantity"))
+                old_price = float(stock["price"])
+                old_quantity = float(stock["quantity"])
 
                 if add_quantity > 0:
                     new_price = round((((old_price * old_quantity) + (buy_price * add_quantity)) / new_quantity), 2)

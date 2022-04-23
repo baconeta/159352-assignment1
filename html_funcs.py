@@ -144,18 +144,18 @@ def make_table_from_json_file() -> str:
         pass
 
     # Handle batch query to grab prices of all stocks in the portfolio
-    stocks_to_price = [s.get("stock-symbol") for s in portfolio_data["Stock_Data"]]
+    stocks_to_price = [s["stock-symbol"] for s in portfolio_data["Stock_Data"]]
     if stocks_to_price:  # this will fail if there were no stocks supplied or no json data returned i.e. empty portfolio
         prices = api_funcs.get_batch_current_prices(stocks_to_price)
         prices = {k: v['quote']['latestPrice'] for (k, v) in prices.items()}
 
         for stock in portfolio_data["Stock_Data"]:
-            paid_price = float(stock.get("price"))
+            paid_price = float(stock["price"])
             gain = round(100 * (float(prices[stock['stock-symbol']]) - paid_price) / paid_price, 2)
             table_str += "<tr>\n"
-            table_str += f"<td>{stock.get('stock-symbol')}</td>\n"
-            table_str += f"<td>{stock.get('quantity')}</td>\n"
-            table_str += f"<td>{stock.get('price')}</td>\n"
+            table_str += f"<td>{stock['stock-symbol']}</td>\n"
+            table_str += f"<td>{stock['quantity']}</td>\n"
+            table_str += f"<td>{stock['price']}</td>\n"
             table_str += f"<td>{str(gain)}%</td>\n"
             table_str += "</tr>\n"
 
@@ -174,11 +174,11 @@ def get_stock_stats(stock_to_research) -> str:
             data += "Error grabbing stock stat data. Maybe that stock doesn't exist?\n<br>\n"
 
         data += "\n<br>\nSymbol:<i> " + stock_symbol.upper() + "</i>"
-        data += "\n<br>\nCompany Name:<i> " + stats.get("companyName") + "</i>"
-        data += "\n<br>\nPE ratio:<i> " + str(round(stats.get("peRatio"), 4)) + "</i>"
-        data += "\n<br>\nMarket Capitalization:<i> " + "{:,}".format(stats.get("marketcap")) + "</i>"
-        data += "\n<br>\n52 week high:<i> " + str(stats.get("week52high")) + "</i>"
-        data += "\n<br>\n52 week low:<i> " + str(stats.get("week52low")) + "</i>"
+        data += "\n<br>\nCompany Name:<i> " + stats["companyName"] + "</i>"
+        data += "\n<br>\nPE ratio:<i> " + str(round(stats["peRatio"], 4)) + "</i>"
+        data += "\n<br>\nMarket Capitalization:<i> " + "{:,}".format(stats["marketcap"]) + "</i>"
+        data += "\n<br>\n52 week high:<i> " + str(stats["week52high"]) + "</i>"
+        data += "\n<br>\n52 week low:<i> " + str(stats["week52low"]) + "</i>"
         data += "\n</div>\n"
 
         # prepare the chart
