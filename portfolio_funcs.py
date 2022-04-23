@@ -1,15 +1,15 @@
 import json
-
 import api_funcs
 from json import JSONDecodeError
 
 
 def handle_portfolio_change(data) -> str:
-    # returns any relevant messages as text to the requester
+    # returns any relevant error or info messages as text to the requester based on the change and validation
     return update_stock_portfolio(data)
 
 
 # Updates the stock portfolio based on the POST data given and returns an appropriate response or error.
+# A very large function that could be handled better but works with very good error handling.
 def update_stock_portfolio(data) -> str:
     # Split the query into its separate elements
     try:

@@ -126,12 +126,12 @@ def serve_site(parsed_headers) -> tuple[bytes, bytes]:
     return header, body
 
 
-api_funcs.get_symbols_from_api()  # grabbed and stored at the beginning of server runtime for efficiency
+api_funcs.get_symbols_from_api()  # grabbed and cached at the beginning of server runtime for first page efficiency
 
 serverSocket.listen(5)
 print('The server is running and ready for requests.')
 
-# Main web server loop. It simply accepts TCP connections, and get the request processed in separate threads.
+# Main web server loop. It accepts TCP connections, and get the request processed in separate threads.
 while True:
     # Set up a new connection from the client
     connectionSocket, address = serverSocket.accept()

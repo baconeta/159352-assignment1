@@ -1,6 +1,7 @@
 import json
 import api_funcs
 
+# Template data that is supplied into all pages created by the server
 template_html_open = "<!DOCTYPE html>\n<html lang='en'>\n"
 template_head_open = "<head>\n<meta charset='UTF-8'>\n<title>159352 Portfolio</title>\n"
 template_head_close = "<link rel='stylesheet' href='main.css''>\n</head>\n"
@@ -21,7 +22,7 @@ def get_requested_page(resource_requested, post_reply="") -> tuple[bytes, bytes]
     elif resource_requested == "research" or resource_requested == "research.html":
         return make_html_file("research", post_reply)
 
-    #  Or get file or resource
+    #  Or get file or resource and return that
     try:
         f = open(resource_requested, "rb")
         body = f.read()
@@ -31,6 +32,8 @@ def get_requested_page(resource_requested, post_reply="") -> tuple[bytes, bytes]
         return make_html_file("404", "<h1>\n404 Not Found\n</h1>\n")
 
 
+# Creates an HTML file based on the filename given.
+# Returns the header with the relevant HTTP response code, and the body data, all encoded as bytes
 def make_html_file(filename, additional_body="") -> tuple[bytes, bytes]:
     if filename == "404":
         header = "HTTP/1.1 404 Not Found\r\n\r\n".encode('utf-8')
@@ -62,6 +65,7 @@ def generate_html_head(filename) -> str:
     return ""
 
 
+# Generate the html body based on filename. Returns nothing if we don't handle this specific page
 def generate_html_body(filename) -> str:
     if filename == "portfolio":
         return generate_portfolio_body()
@@ -104,8 +108,8 @@ def generate_portfolio_body() -> str:
     return portfolio_body
 
 
+# Grabs and formats the valid stock symbols (mostly used for the autocomplete symbol fields)
 def get_autocomplete_symbols() -> str:
-    # prepare the symbols options for the autocomplete symbol fields
     symbols_list = "<datalist id='symbols'>\n"
     for symbol in api_funcs.get_symbols():
         symbols_list += f"<option value='{symbol}'>\n"
@@ -131,6 +135,7 @@ def generate_research_body() -> str:
     return research_body
 
 
+# Grabs portfolio data from file and builds an HTML table out of it. Returns HTML as a single formatted string
 def make_table_from_json_file() -> str:
     portfolio_data = {"Stock_Data": []}
     table_str = "<table align='center' id='table' border='1'>\n<tr>\n<th style='width:120px'>\nStock\n</th>\n<th " \
@@ -164,21 +169,23 @@ def make_table_from_json_file() -> str:
     return table_str
 
 
+# Builds stock statistics for a specific stock HTML output
 def get_stock_stats(stock_to_research) -> str:
     try:
         stock_symbol = stock_to_research.split("=")[1]
         stats = api_funcs.get_stock_data(stock_symbol)
 
         data = "<div style='text-align: left; width: 400px; margin: auto; font-size: 18px'>\n"
+        data += "\n<br>\nSymbol:<i> " + stock_symbol.upper() + "</i>"
+
         if stats is None:
             data += "Error grabbing stock stat data. Maybe that stock doesn't exist?\n<br>\n"
-
-        data += "\n<br>\nSymbol:<i> " + stock_symbol.upper() + "</i>"
-        data += "\n<br>\nCompany Name:<i> " + stats["companyName"] + "</i>"
-        data += "\n<br>\nPE ratio:<i> " + str(round(stats["peRatio"], 4)) + "</i>"
-        data += "\n<br>\nMarket Capitalization:<i> " + "{:,}".format(stats["marketcap"]) + "</i>"
-        data += "\n<br>\n52 week high:<i> " + str(stats["week52high"]) + "</i>"
-        data += "\n<br>\n52 week low:<i> " + str(stats["week52low"]) + "</i>"
+        else:  # Only put the rest of the data in the HTML if we were able to grab stats for this stock
+            data += "\n<br>\nCompany Name:<i> " + stats["companyName"] + "</i>"
+            data += "\n<br>\nPE ratio:<i> " + str(round(stats["peRatio"], 4)) + "</i>"
+            data += "\n<br>\nMarket Capitalization:<i> " + "{:,}".format(stats["marketcap"]) + "</i>"
+            data += "\n<br>\n52 week high:<i> " + str(stats["week52high"]) + "</i>"
+            data += "\n<br>\n52 week low:<i> " + str(stats["week52low"]) + "</i>"
         data += "\n</div>\n"
 
         # prepare the chart
@@ -191,6 +198,7 @@ def get_stock_stats(stock_to_research) -> str:
         return "\n<br>\nThe stock you entered doesn't exist or was entered incorrectly.\n"
 
 
+# Builds stock chart for a specific stock for HTML output
 def build_stock_chart(stock) -> str:
     # get stock data
     chart_data = api_funcs.get_chart_data(stock)
