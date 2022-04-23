@@ -120,7 +120,7 @@ def serve_site(parsed_headers) -> tuple[bytes, bytes]:
         elif resource_requested == "research" or resource_requested == "research.html":
             post_reply = html_funcs.get_stock_stats(parsed_headers.get("Query"))
         header, body = html_funcs.get_requested_page(resource_requested, post_reply)
-    else:
+    else:  # this server only handles POST and GET requests
         header = "HTTP/1.1 501 Not Implemented\r\n\r\n".encode()
         body = "<html><head></head><body><h1>501 request not handled by server.</h1></body></html>".encode()
 

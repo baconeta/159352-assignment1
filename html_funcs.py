@@ -82,17 +82,17 @@ def build_nav_bar(page) -> str:
 def generate_portfolio_body() -> str:
     portfolio_body = ""
 
-    # first prepare the symbols options
-    portfolio_body += "<datalist id='symbols'>\n"
-    for symbol in api_funcs.get_symbols():
-        portfolio_body += f"<option value='{symbol}'>\n"
-    portfolio_body += "</datalist>\n"
+    # first embed the list of symbols
+    portfolio_body += get_autocomplete_symbols()
+
+    portfolio_body += "<h1>Investment Portfolio</h1>\n<a href='https://iexcloud.io'>Data provided by IEX " \
+                      "Cloud</a>\n<br>\n"
 
     # now build the table
     table_data = make_table_from_json_file()
-    portfolio_body += "<h1>Josh's Investment Portfolio</h1>\n<a href='https://iexcloud.io'>Data provided by IEX " \
-                      "Cloud</a>\n<br>\n"
     portfolio_body += table_data
+
+    # add html form
     portfolio_body += "<br>\n<form method='post' target='_self'>\n<label for='stock-symbol' style='width: 100px;'>" \
                       "\nStock Symbol:\n</label>\n<input id='stock-symbol' name='stock-symbol' " \
                       "list='symbols' required type='text'>\n<br>\n<br>\n<label for='quantity' style='width: 100px; " \
@@ -104,18 +104,26 @@ def generate_portfolio_body() -> str:
     return portfolio_body
 
 
+def get_autocomplete_symbols() -> str:
+    # prepare the symbols options for the autocomplete symbol fields
+    symbols_list = "<datalist id='symbols'>\n"
+    for symbol in api_funcs.get_symbols():
+        symbols_list += f"<option value='{symbol}'>\n"
+    symbols_list += "</datalist>\n"
+    return symbols_list
+
+
 # Generate the portfolio html body
 def generate_research_body() -> str:
     research_body = ""
 
-    # first prepare the symbols options
-    research_body += "<datalist id='symbols'>\n"
-    for symbol in api_funcs.get_symbols():
-        research_body += f"<option value='{symbol}'>\n"
-    research_body += "</datalist>\n"
+    # first embed the list of symbols
+    research_body += get_autocomplete_symbols()
 
-    research_body += "<h1>Josh's Stock Research Centre</h1>\n<a href='https://iexcloud.io'>Data provided by IEX " \
+    research_body += "<h1>Stock Research Centre</h1>\n<a href='https://iexcloud.io'>Data provided by IEX " \
                      "Cloud</a>\n<br>\n"
+
+    # add form
     research_body += "<br>\n<form method='post' target='_self'>\n<label for='stock-symbol' style='width: 100px;'>" \
                      "\nStock Symbol:\n</label>\n<input id='stock-symbol' name='stock-symbol' " \
                      "required type='text' list='symbols' inline='true'>\n<button type='submit' formmethod='post' " \
@@ -137,7 +145,7 @@ def make_table_from_json_file() -> str:
 
     # Handle batch query to grab prices of all stocks in the portfolio
     stocks_to_price = [s.get("stock-symbol") for s in portfolio_data["Stock_Data"]]
-    if stocks_to_price:
+    if stocks_to_price:  # this will fail if there were no stocks supplied or no json data returned i.e. empty portfolio
         prices = api_funcs.get_batch_current_prices(stocks_to_price)
         prices = {k: v['quote']['latestPrice'] for (k, v) in prices.items()}
 
