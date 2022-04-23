@@ -1,7 +1,7 @@
 
 # Web Portfolio Assignment
 
-A web container version of a simple http server and stock portfolio site.
+A web container version of a simple HTTP server and stock portfolio site.
 
 Made for 159.352 Advanced Web Development at Massey University April 2022 by Joshua Pearson.
 
@@ -62,45 +62,13 @@ The dockerfile data is visible inside the repo but the relevant data is here:
 
 We use $PORT to allow Heroku on deployment to select the port used for hosting services.
 
-Some images of the process are below:
+Some images of the process are below.
 
+Command line:
+![image](https://user-images.githubusercontent.com/36744690/164895717-0d04f994-6237-4f0e-a11a-9a73bd811bbd.png)
 
-## Acknowledgements and references
-
- - [CanvasJS stock chart reference](https://canvasjs.com/docs/stockcharts/basics-of-creating-html5-stockchart/)
- - [IEX docs](https://iexcloud.io/docs/api/#api-reference)
- - [Docker documentation](https://docs.docker.com/get-started/)
-
-## Tech Stack
-
-**Server:** 
-
-Python 3.10 using the following main modules
-- requests
-- base64 _core builtin_
-- socket _core builtin_
-
-Docker container
-- Docker version 20.10.14, build a224086
-- Docker Desktop 4.7.1 (77678)
-
-Heroku
-- heroku/7.60.1 win32-x64 node-v14.19.0
-- config: web /bin/sh -c python\ server.py\ \$PORT
-
-![image](https://user-images.githubusercontent.com/36744690/164894926-d52da68c-0c80-4c0e-8f99-fdb86631fb7c.png)
-
-
-**Tools:**
-- PyCharm 2022.1 (Professional Edition)
-- Anaconda3 Python Environment
-- Webstorm 2022.1 (Professional Edition)
-- [IEX REST API](https://iexcloud.io/) (free version)
-- [CanvasJS](https://canvasjs.com/) (30 day free trial)
-
-
-
-
+Docker running locally:
+![image](https://user-images.githubusercontent.com/36744690/164895752-7a0c0155-140c-489b-93d3-7717cd57d0cb.png)
 
 ## Run Locally
 
@@ -145,3 +113,39 @@ Once the server is running using either method you can access the the locally ho
 http://localhost:8080/
 
 username and password: 20019455
+## Tech Stack
+
+**Server:** 
+
+Python 3.10 using the following main modules
+- requests
+- base64 _core builtin_
+- socket _core builtin_
+
+Docker container
+- Docker version 20.10.14, build a224086
+- Docker Desktop 4.7.1 (77678)
+
+Heroku
+- heroku/7.60.1 win32-x64 node-v14.19.0
+- config: web /bin/sh -c python\ server.py\ \$PORT
+
+![image](https://user-images.githubusercontent.com/36744690/164894926-d52da68c-0c80-4c0e-8f99-fdb86631fb7c.png)
+
+
+**Tools:**
+- PyCharm 2022.1 (Professional Edition)
+- Anaconda3 Python Environment
+- Webstorm 2022.1 (Professional Edition)
+- [IEX REST API](https://iexcloud.io/) (free version)
+- [CanvasJS](https://canvasjs.com/) (30 day free trial)
+
+
+
+
+
+## Acknowledgements and references
+
+ - [CanvasJS stock chart reference](https://canvasjs.com/docs/stockcharts/basics-of-creating-html5-stockchart/)
+ - [IEX docs](https://iexcloud.io/docs/api/#api-reference)
+ - [Docker documentation](https://docs.docker.com/get-started/)
