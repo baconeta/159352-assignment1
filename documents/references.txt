@@ -1,0 +1,4 @@
+references:
+https://heynode.com/tutorial/readwrite-json-files-nodejs/
+https://www.w3schools.com/nodejs/nodejs_filesystem.asp
+https://canvasjs.com/docs/stockcharts/basics-of-creating-html5-stockchart/

@@ -1,3 +1,0 @@
-references:
-https://heynode.com/tutorial/readwrite-json-files-nodejs/
-https://www.w3schools.com/nodejs/nodejs_filesystem.asp
