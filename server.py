@@ -19,8 +19,7 @@ import api_funcs
 import html_funcs
 import portfolio_funcs
 
-# TODO try make some better generic handling for file requests etc (atm it won't find anything even if it exists)
-# TODO Add index page + data
+# TODO Add index data
 # TODO delete all unnecessary files once everything is complete
 # TODO write a readme file and info
 
@@ -113,16 +112,16 @@ def check_authentication(auth_token) -> bool:
 # Handles the generating and serving of all related site data once request is authenticated and validated
 def serve_site(parsed_headers) -> tuple[bytes, bytes]:
     request_type = parsed_headers.get("HTTP-Method")
+    resource_requested = parsed_headers["Resource"]
     if request_type == "GET":
-        header, body = html_funcs.get_requested_page(parsed_headers)
+        header, body = html_funcs.get_requested_page(resource_requested)
     elif request_type == "POST":
         post_reply = ""
-        resource_requested = parsed_headers.get("Resource")
         if resource_requested == "portfolio" or resource_requested == "portfolio.html":
             post_reply = portfolio_funcs.handle_portfolio_change(parsed_headers.get("Query"))
         elif resource_requested == "research" or resource_requested == "research.html":
             post_reply = html_funcs.get_stock_stats(parsed_headers.get("Query"))
-        header, body = html_funcs.get_requested_page(parsed_headers, post_reply)
+        header, body = html_funcs.get_requested_page(resource_requested, post_reply)
     else:
         header = "HTTP/1.1 501 Not Implemented\r\n\r\n".encode()
         body = "<html><head></head><body><h1>501 request not handled by server.</h1></body></html>".encode()

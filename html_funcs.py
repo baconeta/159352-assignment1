@@ -3,24 +3,31 @@ import api_funcs
 
 template_html_open = "<!DOCTYPE html>\n<html lang='en'>\n"
 template_head_open = "<head>\n<meta charset='UTF-8'>\n<title>159352 Portfolio</title>\n"
-template_head_close = "</head>\n"
-template_body_open = "<body style='text-align:center;' id='body'>\n"
+template_head_close = "<link rel='stylesheet' href='main.css''>\n</head>\n"
+template_body_open = "<body>\n<div class='navbar'>\n<a class='active' href='/index.html'>Home</a>\n" \
+                     "<a href='/portfolio'>Portfolio</a>\n<a href='/research'>Research</a>\n</div>\n"
 template_body_close = "</body>\n"
 template_html_close = "</html>\n"
 
 
 # Used to verify and serve the specific required response and page the browser requested
-def get_requested_page(parsed_headers, post_reply="") -> tuple[bytes, bytes]:
-    resource_requested = parsed_headers.get("Resource")
+def get_requested_page(resource_requested, post_reply="") -> tuple[bytes, bytes]:
+    # Build requested HTML file
     if resource_requested == "" or resource_requested == "index.html":
         return make_html_file("index")
     elif resource_requested == "portfolio" or resource_requested == "portfolio.html":
         return make_html_file("portfolio", post_reply)
     elif resource_requested == "research" or resource_requested == "research.html":
         return make_html_file("research", post_reply)
-    # try and return a file? otherwise 404
-    else:
-        return make_html_file("404")
+
+    #  Or get file or resource
+    try:
+        f = open(resource_requested, "rb")
+        body = f.read()
+        header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+        return header, body
+    except IOError:
+        return make_html_file("404")  # TODO change to missing file error?
 
 
 def make_html_file(filename, additional_body="") -> tuple[bytes, bytes]:
@@ -77,8 +84,8 @@ def generate_portfolio_body() -> str:
     portfolio_body += "<h1>Josh's Investment Portfolio</h1>\n<a href='https://iexcloud.io'>Data provided by IEX " \
                       "Cloud</a>\n<br>\n"
     portfolio_body += table_data
-    portfolio_body += "<br>\n<form method='post' target='_self'>\n<label for='stock-symbol' style='width: 100px; " \
-                      "display:inline-block'>\nStock Symbol:\n</label>\n<input id='stock-symbol' name='stock-symbol' " \
+    portfolio_body += "<br>\n<form method='post' target='_self'>\n<label for='stock-symbol' style='width: 100px;'>" \
+                      "\nStock Symbol:\n</label>\n<input id='stock-symbol' name='stock-symbol' " \
                       "list='symbols' required type='text'>\n<br>\n<br>\n<label for='quantity' style='width: 100px; " \
                       "display:inline-block'>\nQuantity:\n</label>\n<input id='quantity' name='quantity' required " \
                       "step=any type='number' value='0'>\n<br>\n<br>\n<label for='price' style='width: 100px; " \
@@ -100,8 +107,8 @@ def generate_research_body() -> str:
 
     research_body += "<h1>Josh's Stock Research Centre</h1>\n<a href='https://iexcloud.io'>Data provided by IEX " \
                      "Cloud</a>\n<br>\n"
-    research_body += "<br>\n<form method='post' target='_self'>\n<label for='stock-symbol' style='width: 100px; " \
-                     "display:inline-block'>\nStock Symbol:\n</label>\n<input id='stock-symbol' name='stock-symbol' " \
+    research_body += "<br>\n<form method='post' target='_self'>\n<label for='stock-symbol' style='width: 100px;'>" \
+                     "\nStock Symbol:\n</label>\n<input id='stock-symbol' name='stock-symbol' " \
                      "required type='text' list='symbols' inline='true'>\n<button type='submit' formmethod='post' " \
                      "inline='true'>\nResearch\n</button>\n</form>\n"
     return research_body
