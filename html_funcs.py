@@ -179,7 +179,7 @@ def get_stock_stats(stock_to_research) -> str:
         data += "\n<br>\nSymbol:<i> " + stock_symbol.upper() + "</i>"
 
         if stats is None:
-            data += "Error grabbing stock stat data. Maybe that stock doesn't exist?\n<br>\n"
+            data += f"\n<br>Error grabbing stock stat data.\n<br>Maybe {stock_symbol.upper()} doesn't exist?\n<br>\n"
         else:  # Only put the rest of the data in the HTML if we were able to grab stats for this stock
             data += "\n<br>\nCompany Name:<i> " + stats["companyName"] + "</i>"
             data += "\n<br>\nPE ratio:<i> " + str(round(stats["peRatio"], 4)) + "</i>"
@@ -203,7 +203,7 @@ def build_stock_chart(stock) -> str:
     # get stock data
     chart_data = api_funcs.get_chart_data(stock)
     if chart_data is None:
-        return f"\n<br>\nError grabbing data about {stock}. Try again or another stock.\n<br>\n"
+        return f"\n<br>\nError grabbing chart data for {stock}. Check that it exists or try again.\n<br>\n"
 
     # add script and embed stock data
     chart = "\n<script type='text/javascript'>\nwindow.onload = function () { let dataPoints = []; let json_data = "
