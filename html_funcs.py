@@ -163,15 +163,14 @@ def get_stock_stats(stock_to_research) -> str:
 
         data = "<div style='text-align: left; width: 350px; margin: auto; font-size: 18px'>\n"
         if stats is None:
-            data += "Error grabbing stock stat data. Data below may be incomplete.\n<br>\n"
+            data += "Error grabbing stock stat data. Maybe that stock doesn't exist?\n<br>\n"
 
-        # stats.get() calls will be empty objects if stats is None which is good behaviour here
-        data += "\n<br>\nSymbol: " + stock_symbol.upper()
-        data += "\n<br>\nCompany Name: " + stats.get("companyName")
-        data += "\n<br>\nPE ratio: " + str(stats.get("peRatio"))
-        data += "\nbr>\nMarket Capitalization: " + str(stats.get("marketcap"))
-        data += "\n<br>\n52 week high: " + str(stats.get("week52high"))
-        data += "\n<br>\n52 week low: " + str(stats.get("week52low"))
+        data += "\n<br>\nSymbol:<i> " + stock_symbol.upper() + "</i>"
+        data += "\n<br>\nCompany Name:<i> " + stats.get("companyName") + "</i>"
+        data += "\n<br>\nPE ratio:<i> " + str(round(stats.get("peRatio"), 4)) + "</i>"
+        data += "\n<br>\nMarket Capitalization:<i> " + "{:,}".format(stats.get("marketcap")) + "</i>"
+        data += "\n<br>\n52 week high:<i> " + str(stats.get("week52high")) + "</i>"
+        data += "\n<br>\n52 week low:<i> " + str(stats.get("week52low")) + "</i>"
         data += "\n</div>\n"
 
         # prepare the chart
@@ -180,8 +179,7 @@ def get_stock_stats(stock_to_research) -> str:
         # now add the chart
         data += "<div id='stockChart' style='height: 450px; width: 50%; margin-left: auto; margin-right: auto;'>\n</div>\n"
         return data
-    except (IndexError, KeyError) as e:
-        print(e)
+    except (IndexError, KeyError, AttributeError):
         return "\n<br>\nThe stock you entered doesn't exist or was entered incorrectly.\n"
 
 

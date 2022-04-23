@@ -1,8 +1,7 @@
 body {
     margin: auto;
-    font-family: Arial, Helvetica, sans-serif;
     text-align: center;
-    font-family: "Candara";
+    font-family: "Candara", serif;
 }
 
 .navbar {
