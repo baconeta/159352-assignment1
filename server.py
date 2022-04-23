@@ -19,8 +19,6 @@ import api_funcs
 import html_funcs
 import portfolio_funcs
 
-# TODO write a readme file and info
-
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverPort = int(sys.argv[1])
 # serverPort = 8080
