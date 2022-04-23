@@ -169,7 +169,7 @@ def get_stock_stats(stock_to_research) -> str:
         stock_symbol = stock_to_research.split("=")[1]
         stats = api_funcs.get_stock_data(stock_symbol)
 
-        data = "<div style='text-align: left; width: 350px; margin: auto; font-size: 18px'>\n"
+        data = "<div style='text-align: left; width: 400px; margin: auto; font-size: 18px'>\n"
         if stats is None:
             data += "Error grabbing stock stat data. Maybe that stock doesn't exist?\n<br>\n"
 
